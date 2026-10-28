@@ -32,6 +32,14 @@
 <footer class="footer"><span><strong>Chem AI crush</strong> — Атомнан молекулаға. Теориядан практикаға.</span><span>Химиядан қолданбалы ҰБТ платформасының демо-нұсқасы</span></footer></main></div>
 <div class="modal-backdrop" id="loginModal"><div class="modal"><h2>Жеке кабинет</h2><p>Тіркелу және қауіпсіз аккаунт функциялары серверлік backend қосылғанда іске қосылады. Бұл демо-нұсқа деректерді серверге жібермейді.</p><input placeholder="Электрондық пошта" type="email" disabled><input placeholder="Құпиясөз" type="password" disabled><div class="modal-actions"><button class="btn primary" id="modalClose">Түсінікті</button></div></div></div>
 <script>
+  
+const SUPABASE_URL = 'https://skmdphfeyrqdmjlzyspe.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_FTMwRrptfPTP7qEwCTZ3Rw_MGaZhox_';
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
 const topics=[
 {g:'7-сынып',icon:'⚛️',title:'Атомдар. Молекулалар. Заттар',desc:'Атом құрылысы, химиялық элементтер, жай және күрделі заттар.',kind:'Теория · Конспект · Тест'},
 {g:'7-сынып',icon:'🧬',title:'Изотоптар және атом құрамы',desc:'Протон, нейтрон, электрон, массалық сан және изотоптар.',kind:'Теория · Есептер'},
