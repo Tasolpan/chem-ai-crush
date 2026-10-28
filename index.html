@@ -14,7 +14,7 @@
 <body>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <div class="app">
-<header class="topbar"><div class="brand"><div class="brandmark">✦</div><div>Chem AI crush<small>АТОМНАН МОЛЕКУЛАҒА • ТЕОРИЯДАН ПРАКТИКАҒА</small></div></div><nav class="nav" id="nav"><button class="active" data-page="home">Басты бет</button><button data-page="theory">Теория</button><button data-page="practice">Практика</button><button data-page="periodic">Периодтық кесте</button><button data-page="tools">Құралдар</button></nav><div style="display:flex;gap:9px;align-items:center"><button class="lang" id="langBtn" aria-label="Тіл ауыстыру">ҚАЗ ▾</button><button class="menu-btn" id="menuBtn">☰</button></div></header>
+<header class="topbar"><div class="brand"><div class="brandmark">✦</div><div>Chem AI crush<small>АТОМНАН МОЛЕКУЛАҒА • ТЕОРИЯДАН ПРАКТИКАҒА</small></div></div><nav class="nav" id="nav"><button class="active" data-page="home">Басты бет</button><button data-page="theory">Теория</button><button data-page="practice">Практика</button><button data-page="periodic">Периодтық кесте</button><button data-page="tools">Құралдар</button></nav><div style="display:flex;gap:9px;align-items:center"><button class="lang" id="langBtn" aria-label="Тіл ауыстыру">ҚАЗ ▾</button><button class="lang" id="accountBtn">Кіру</button><button class="menu-btn" id="menuBtn">☰</button></div></header>
 <main class="main">
 <section class="page active" id="page-home">
 <div class="hero"><div><div class="eyebrow"><span class="dot"></span> ҚАЗАҚША ҚОЛДАНБАЛЫ ҰБТ ПЛАТФОРМАСЫ</div><h1>Атомнан молекулаға.<br><span class="gradient">Теориядан практикаға.</span></h1><p>Химияны жаттап қана қоймай, түсініп үйрен. Қысқа теория, есептердің қадамдық шешімі және ҰБТ форматына жақын жаттығулар — бір жерде.</p><div class="actions"><button class="btn primary" data-goto="theory">Оқуды бастау ↗</button><button class="btn secondary" data-goto="practice">Тест тапсыру →</button></div></div><div class="hero-art"><div class="orbit"><div class="nucleus">⚛</div><i class="electron e1"></i><i class="electron e2"></i><i class="electron e3"></i></div><div class="float-tag tag1">H₂O · Су молекуласы</div><div class="float-tag tag2">p⁺ &nbsp; n⁰ &nbsp; e⁻</div></div></div>
@@ -30,7 +30,36 @@
 <section class="page" id="page-tools"><div class="page-title"><h1>Химия құралдары</h1><p>Қарапайым есептеулерге арналған оқу құралдары.</p></div><div class="calc-grid"><div class="panel"><h3 style="margin-top:0">Молярлық масса калькуляторы</h3><p class="muted" style="font-size:13px">Формуланы енгіз: H2O, CO2, NaCl, H2SO4.</p><input class="calc-input" id="formulaInput" style="width:100%" value="H2O" placeholder="Мысалы: H2O"><button class="btn primary" id="calcMass" style="margin-top:12px">Есептеу</button><div class="calc-result" id="massResult">18.02 г/моль</div><p class="muted" id="massExplain" style="font-size:12px">H₂O құрамындағы атомдардың салыстырмалы массалары қосылады.</p></div><div class="panel"><h3 style="margin-top:0">Жылдам калькулятор</h3><input class="calc-input" id="calcExpr" style="width:100%" value="2 * (18 + 16)" placeholder="Мысалы: 2*(18+16)"><button class="btn primary" id="calcBasic" style="margin-top:12px">Есептеу</button><div class="calc-result" id="basicResult">68</div><p class="muted" style="font-size:12px">Қосу, азайту, көбейту, бөлу және жақшаларды қолдайды.</p></div></div><div class="section-head"><div><h2>Ерігіштік кестесі</h2><p>Ерігіштік ережелеріне арналған бөлім.</p></div></div><div class="card"><h3 style="margin-top:0">Есте сақта</h3><p class="muted" style="line-height:1.7;font-size:14px">Көптеген нитраттар (NO₃⁻) суда ериді. Сілтілік металдардың тұздары көбіне еритін болады. Ерекше жағдайларды нақты ерігіштік кестесімен тексер.</p><div class="empty-note">Толық интерактивті ерігіштік кестесі келесі нұсқада қосылады.</div></div></section>
 <div class="footer"><span>© 2026 Chem AI crush · Атомнан молекулаға</span><span>Оқу мақсатында жасалған бастапқы демо-нұсқа</span></div>
 <footer class="footer"><span><strong>Chem AI crush</strong> — Атомнан молекулаға. Теориядан практикаға.</span><span>Химиядан қолданбалы ҰБТ платформасының демо-нұсқасы</span></footer></main></div>
-<div class="modal-backdrop" id="loginModal"><div class="modal"><h2>Жеке кабинет</h2><p>Тіркелу және қауіпсіз аккаунт функциялары серверлік backend қосылғанда іске қосылады. Бұл демо-нұсқа деректерді серверге жібермейді.</p><input placeholder="Электрондық пошта" type="email" disabled><input placeholder="Құпиясөз" type="password" disabled><div class="modal-actions"><button class="btn primary" id="modalClose">Түсінікті</button></div></div></div>
+
+<div class="modal-backdrop" id="loginModal">
+  <div class="modal">
+    <h2>Жеке кабинет</h2>
+    <p>Оқушы немесе мұғалім ретінде тіркеліңіз.</p>
+
+    <label for="authName">Аты-жөніңіз</label>
+    <input id="authName" type="text" placeholder="Аты-жөніңіз">
+
+    <label for="authEmail">Электрондық пошта</label>
+    <input id="authEmail" type="email" placeholder="email@example.com">
+
+    <label for="authPassword">Құпиясөз</label>
+    <input id="authPassword" type="password" placeholder="Кемінде 6 таңба">
+
+    <label for="authRole">Рөліңіз</label>
+    <select id="authRole">
+      <option value="student">Оқушы</option>
+      <option value="teacher">Мұғалім</option>
+    </select>
+
+    <p id="authMessage"></p>
+
+    <div class="modal-actions">
+      <button class="btn primary" id="registerBtn" type="button">Тіркелу</button>
+      <button class="btn" id="loginBtn" type="button">Кіру</button>
+      <button class="btn" id="modalClose" type="button">Жабу</button>
+    </div>
+  </div>
+</div>
 <script>
   
 const SUPABASE_URL = 'https://skmdphfeyrqdmjlzyspe.supabase.co';
@@ -71,5 +100,83 @@ const quiz=[{q:'Судың химиялық формуласы қандай?',a:
 const els=[['H','Сутек',1,1.008,'nonmetal',1,1],['He','Гелий',2,4.003,'nonmetal',18,1],['Li','Литий',3,6.94,'metal',1,2],['Be','Бериллий',4,9.012,'metal',2,2],['B','Бор',5,10.81,'metalloid',13,2],['C','Көміртек',6,12.011,'nonmetal',14,2],['N','Азот',7,14.007,'nonmetal',15,2],['O','Оттек',8,15.999,'nonmetal',16,2],['F','Фтор',9,18.998,'nonmetal',17,2],['Ne','Неон',10,20.18,'nonmetal',18,2],['Na','Натрий',11,22.99,'metal',1,3],['Mg','Магний',12,24.305,'metal',2,3],['Al','Алюминий',13,26.982,'metal',13,3],['Si','Кремний',14,28.085,'metalloid',14,3],['P','Фосфор',15,30.974,'nonmetal',15,3],['S','Күкірт',16,32.06,'nonmetal',16,3],['Cl','Хлор',17,35.45,'nonmetal',17,3],['Ar','Аргон',18,39.948,'nonmetal',18,3],['K','Калий',19,39.098,'metal',1,4],['Ca','Кальций',20,40.078,'metal',2,4]];function renderPeriodic(){let grid=document.getElementById('periodicGrid');grid.innerHTML='';els.forEach(e=>{let b=document.createElement('button');b.className='element '+e[4];b.innerHTML=`<span>${e[2]}</span><b>${e[0]}</b><small>${e[3]}</small>`;b.title=e[1];b.onclick=()=>{document.getElementById('elementInfo').innerHTML=`<div style="display:flex;align-items:center;gap:15px"><div class="element ${e[4]}" style="width:65px;height:65px;display:grid;place-content:center"><span>${e[2]}</span><b style="font-size:20px">${e[0]}</b><small>${e[3]}</small></div><div><h3 style="margin:0 0 4px">${e[1]} (${e[0]})</h3><p class="muted" style="margin:0;font-size:13px">Реттік нөмірі: ${e[2]} · Салыстырмалы атомдық массасы: ${e[3]}</p><p style="margin:5px 0 0;font-size:12px;color:#087e9b">${e[4]==='metal'?'Металл':e[4]==='metalloid'?'Жартылай металл':'Бейметалл'}</p></div></div>`};grid.appendChild(b)})}renderPeriodic();
 const masses={H:1.008,He:4.003,Li:6.94,Be:9.012,B:10.81,C:12.011,N:14.007,O:15.999,F:18.998,Ne:20.18,Na:22.99,Mg:24.305,Al:26.982,Si:28.085,P:30.974,S:32.06,Cl:35.45,Ar:39.948,K:39.098,Ca:40.078};function molarMass(f){let i=0,total=0;const parseGroup=()=>{let sum=0;while(i<f.length&&f[i]!==')'){if(f[i]==='('){i++;let sub=parseGroup();if(f[i]!==')')throw Error('Жақша дұрыс жабылмаған');i++;let n=readNum();sum+=sub*n}else{let m=f.slice(i).match(/^[A-Z][a-z]?/);if(!m)throw Error('Формуланы тексер: элемент таңбасы дұрыс емес');let sym=m[0];i+=sym.length;if(!(sym in masses))throw Error('Бұл демода '+sym+' элементі жоқ');let n=readNum();sum+=masses[sym]*n}}return sum};const readNum=()=>{let m=f.slice(i).match(/^\d+/);if(m){i+=m[0].length;return +m[0]}return 1};let val=parseGroup();if(i<f.length)throw Error('Формуланы тексер');return val}document.getElementById('calcMass').onclick=()=>{let f=document.getElementById('formulaInput').value.replace(/\s/g,'');try{if(!f)throw Error('Химиялық формуланы енгіз.');let m=molarMass(f);document.getElementById('massResult').textContent=m.toFixed(2)+' г/моль';document.getElementById('massExplain').textContent=f+' формуласы бойынша молярлық масса есептелді.'}catch(e){document.getElementById('massResult').textContent='Қате';document.getElementById('massExplain').textContent=e.message}};document.getElementById('calcBasic').onclick=()=>{let x=document.getElementById('calcExpr').value;if(!/^[\d\s()+\-*/.]+$/.test(x)){document.getElementById('basicResult').textContent='Қате өрнек';return}try{let out=Function('"use strict";return ('+x+')')();if(!Number.isFinite(out))throw Error();document.getElementById('basicResult').textContent=Number(out.toFixed(8)).toString()}catch(e){document.getElementById('basicResult').textContent='Қате өрнек'}};
 function openPractice(){showPage('practice')}window.openPractice=openPractice;
+  
+const accountBtn = document.getElementById('accountBtn');
+const loginModal = document.getElementById('loginModal');
+const authMessage = document.getElementById('authMessage');
+
+accountBtn.onclick = async () => {
+  loginModal.classList.add('open');
+  authMessage.textContent = '';
+
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  if (user) {
+    accountBtn.textContent = 'Менің кабинетім';
+    authMessage.textContent = 'Сіз аккаунтқа кіріп тұрсыз: ' + user.email;
+  }
+};
+
+document.getElementById('registerBtn').onclick = async () => {
+  const fullName = document.getElementById('authName').value.trim();
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+
+  if (!fullName || !email || password.length < 6) {
+    authMessage.textContent = 'Аты-жөніңізді, электрондық поштаңызды енгізіп, кемінде 6 таңбалы құпиясөз жазыңыз.';
+    return;
+  }
+
+  authMessage.textContent = 'Тіркелу орындалып жатыр...';
+
+  const { data, error } = await supabaseClient.auth.signUp({
+    email,
+    password,
+    options: {
+      data: {
+        full_name: fullName,
+        preferred_language: 'kk'
+      }
+    }
+  });
+
+  if (error) {
+    authMessage.textContent = 'Қате: ' + error.message;
+    return;
+  }
+
+  authMessage.textContent = data.session
+    ? 'Тіркелу сәтті аяқталды! Енді аккаунтқа кіре аласыз.'
+    : 'Тіркелу сұранысы қабылданды. Электрондық поштаңызды тексеріп, аккаунтты растаңыз.';
+};
+
+document.getElementById('loginBtn').onclick = async () => {
+  const email = document.getElementById('authEmail').value.trim();
+  const password = document.getElementById('authPassword').value;
+
+  if (!email || !password) {
+    authMessage.textContent = 'Электрондық пошта мен құпиясөзді енгізіңіз.';
+    return;
+  }
+
+  authMessage.textContent = 'Аккаунтқа кіріп жатырсыз...';
+
+  const { data, error } = await supabaseClient.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    authMessage.textContent = 'Кіру қатесі: ' + error.message;
+    return;
+  }
+
+  accountBtn.textContent = 'Аккаунт';
+  authMessage.textContent = 'Сәтті кірдіңіз: ' + data.user.email;
+};
+
+document.getElementById('modalClose').onclick = () => {
+  loginModal.classList.remove('open');
+};
 </script>
 </body></html>
