@@ -113,7 +113,56 @@ document.querySelectorAll('[data-goto]').forEach(b => {
   b.addEventListener('click', () => showPage(b.dataset.goto));
 });
 const quiz=[{q:'Судың химиялық формуласы қандай?',a:['CO₂','H₂O','O₂','NaCl'],c:1,e:'Су молекуласында екі сутек атомы және бір оттек атомы бар.'},{q:'Атом ядросында қандай бөлшектер болады?',a:['Тек электрондар','Протондар мен нейтрондар','Тек нейтрондар','Протондар мен электрондар'],c:1,e:'Ядро протондар мен нейтрондардан тұрады. Электрондар ядроны қоршаған аймақта болады.'},{q:'Оттектің химиялық таңбасы қандай?',a:['Ox','O','Ot','Og'],c:1,e:'Оттектің химиялық таңбасы — O. O₂ — оттектің жай затының формуласы.'},{q:'Зат мөлшерінің SI жүйесіндегі бірлігі қандай?',a:['Грамм','Литр','Моль','Паскаль'],c:2,e:'Зат мөлшерінің негізгі бірлігі — моль.'},{q:'Бейтарап атомда протон саны электрон санына…',a:['Әрқашан тең','Әрқашан аз','Әрқашан көп','Байланысты емес'],c:0,e:'Бейтарап атомда оң зарядты протондардың саны теріс зарядты электрондардың санына тең.'}];let qi=0,score=0,answered=false;function renderQuiz(){let q=quiz[qi];document.getElementById('quizCount').textContent=`${qi+1}-сұрақ / ${quiz.length}`;document.getElementById('quizScore').textContent='Ұпай: '+score;document.getElementById('quizProgress').style.width=((qi+1)/quiz.length*100)+'%';document.getElementById('quizQuestion').textContent=q.q;document.getElementById('feedback').innerHTML='';document.getElementById('nextQuestion').disabled=true;document.getElementById('nextQuestion').textContent=qi===quiz.length-1?'Қорытындыны көру':'Келесі сұрақ →';answered=false;document.getElementById('answers').innerHTML=q.a.map((a,i)=>`<button class="answer" data-answer="${i}"><span class="letter">${'ABCD'[i]}</span><span>${a}</span></button>`).join('');document.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>answerQuiz(+b.dataset.answer))}function answerQuiz(i){if(answered)return;answered=true;let q=quiz[qi];document.querySelectorAll('[data-answer]').forEach((b,j)=>{b.disabled=true;if(j===q.c)b.classList.add('correct');else if(j===i)b.classList.add('wrong')});if(i===q.c)score++;document.getElementById('quizScore').textContent='Ұпай: '+score;document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${i===q.c?'Дұрыс жауап!':'Қайта қарап көр!'}</b><br>${q.e}</div>`;document.getElementById('nextQuestion').disabled=false}document.getElementById('nextQuestion').onclick=()=>{if(qi<quiz.length-1){qi++;renderQuiz()}else{document.getElementById('quizPanel').innerHTML=`<div style="text-align:center;padding:28px 10px"><div style="font-size:44px">${score>=4?'🎉':'🧪'}</div><h2>Жаттығу аяқталды!</h2><div style="font-size:38px;font-weight:900;color:#087e9b">${score} / ${quiz.length}</div><p class="muted">${score>=4?'Жарайсың! Біліміңді әрі қарай бекіт.':'Қателерді қарап, қайта жаттығып көр.'}</p><button class="btn primary" id="again">Қайта тапсыру</button></div>`;document.getElementById('again').onclick=restartQuiz}};function restartQuiz(){qi=0;score=0;document.getElementById('quizPanel').innerHTML='<div style="display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px"><span id="quizCount"></span><span id="quizScore"></span></div><div class="progress" style="margin-top:12px"><span id="quizProgress" style="width:20%"></span></div><h2 class="quiz-question" id="quizQuestion"></h2><div class="answers" id="answers"></div><div id="feedback"></div><div style="display:flex;justify-content:space-between;margin-top:18px;gap:10px"><button class="btn" style="background:#edf3f8;color:var(--ink)" id="restartQuiz">Қайта бастау</button><button class="btn primary" id="nextQuestion" disabled>Келесі сұрақ →</button></div>';document.getElementById('restartQuiz').onclick=restartQuiz;document.getElementById('nextQuestion').onclick=()=>{if(qi<quiz.length-1){qi++;renderQuiz()}else{document.getElementById('quizPanel').innerHTML=`<div style="text-align:center;padding:28px 10px"><h2>Жаттығу аяқталды!</h2><div class="calc-result">${score} / ${quiz.length}</div><button class="btn primary" onclick="restartQuiz()">Қайта тапсыру</button></div>`}};renderQuiz()}document.getElementById('restartQuiz').onclick=restartQuiz;renderQuiz();
-const els=[['H','Сутек',1,1.008,'nonmetal',1,1],['He','Гелий',2,4.003,'nonmetal',18,1],['Li','Литий',3,6.94,'metal',1,2],['Be','Бериллий',4,9.012,'metal',2,2],['B','Бор',5,10.81,'metalloid',13,2],['C','Көміртек',6,12.011,'nonmetal',14,2],['N','Азот',7,14.007,'nonmetal',15,2],['O','Оттек',8,15.999,'nonmetal',16,2],['F','Фтор',9,18.998,'nonmetal',17,2],['Ne','Неон',10,20.18,'nonmetal',18,2],['Na','Натрий',11,22.99,'metal',1,3],['Mg','Магний',12,24.305,'metal',2,3],['Al','Алюминий',13,26.982,'metal',13,3],['Si','Кремний',14,28.085,'metalloid',14,3],['P','Фосфор',15,30.974,'nonmetal',15,3],['S','Күкірт',16,32.06,'nonmetal',16,3],['Cl','Хлор',17,35.45,'nonmetal',17,3],['Ar','Аргон',18,39.948,'nonmetal',18,3],['K','Калий',19,39.098,'metal',1,4],['Ca','Кальций',20,40.078,'metal',2,4]];function renderPeriodic(){let grid=document.getElementById('periodicGrid');grid.innerHTML='';els.forEach(e=>{let b=document.createElement('button');b.className='element '+e[4];b.innerHTML=`<span>${e[2]}</span><b>${e[0]}</b><small>${e[3]}</small>`;b.title=e[1];b.onclick=()=>{document.getElementById('elementInfo').innerHTML=`<div style="display:flex;align-items:center;gap:15px"><div class="element ${e[4]}" style="width:65px;height:65px;display:grid;place-content:center"><span>${e[2]}</span><b style="font-size:20px">${e[0]}</b><small>${e[3]}</small></div><div><h3 style="margin:0 0 4px">${e[1]} (${e[0]})</h3><p class="muted" style="margin:0;font-size:13px">Реттік нөмірі: ${e[2]} · Салыстырмалы атомдық массасы: ${e[3]}</p><p style="margin:5px 0 0;font-size:12px;color:#087e9b">${e[4]==='metal'?'Металл':e[4]==='metalloid'?'Жартылай металл':'Бейметалл'}</p></div></div>`};grid.appendChild(b)})}renderPeriodic();
+
+let els = [];
+
+async function renderPeriodic() {
+  const grid = document.getElementById('periodicGrid');
+  const info = document.getElementById('elementInfo');
+
+  try {
+    const response = await fetch('./elements.json');
+    if (!response.ok) throw new Error('elements.json табылмады');
+
+    els = await response.json();
+    grid.innerHTML = '';
+
+    els.forEach(e => {
+      const type = ['metal', 'alkali', 'alkaline', 'transition',
+        'post-transition'].includes(e.category)
+        ? 'metal'
+        : e.category === 'metalloid' ? 'metalloid' : 'nonmetal';
+
+      const b = document.createElement('button');
+      b.className = 'element ' + type;
+      b.style.gridColumn = e.group || 1;
+      b.style.gridRow = e.period;
+      b.innerHTML = `<span>${e.z}</span><b>${e.symbol}</b><small>${e.mass}</small>`;
+      b.title = e.name;
+
+      b.onclick = () => {
+        info.innerHTML = `
+          <h3>${e.name} (${e.symbol})</h3>
+          <p>Реттік нөмірі: ${e.z}</p>
+          <p>Атомдық массасы: ${e.mass}</p>
+          <p>Тобы: ${e.group} · Периоды: ${e.period}</p>
+          <p>Электрондық конфигурациясы: ${e.config || '—'}</p>
+          <p>Валенттілігі: ${e.valence || '—'}</p>
+          <p>Атом радиусы: ${e.radius ?? '—'} пм</p>
+          <p>Электртерістілігі: ${e.en ?? '—'}</p>
+        `;
+      };
+
+      grid.appendChild(b);
+    });
+
+    info.innerHTML = '<b>118 элемент жүктелді!</b><p>Элементті басып, мәліметін көр.</p>';
+  } catch (error) {
+    info.textContent = 'Кестені жүктеу қатесі: ' + error.message;
+  }
+}
+
+renderPeriodic();
 const masses={H:1.008,He:4.003,Li:6.94,Be:9.012,B:10.81,C:12.011,N:14.007,O:15.999,F:18.998,Ne:20.18,Na:22.99,Mg:24.305,Al:26.982,Si:28.085,P:30.974,S:32.06,Cl:35.45,Ar:39.948,K:39.098,Ca:40.078};function molarMass(f){let i=0,total=0;const parseGroup=()=>{let sum=0;while(i<f.length&&f[i]!==')'){if(f[i]==='('){i++;let sub=parseGroup();if(f[i]!==')')throw Error('Жақша дұрыс жабылмаған');i++;let n=readNum();sum+=sub*n}else{let m=f.slice(i).match(/^[A-Z][a-z]?/);if(!m)throw Error('Формуланы тексер: элемент таңбасы дұрыс емес');let sym=m[0];i+=sym.length;if(!(sym in masses))throw Error('Бұл демода '+sym+' элементі жоқ');let n=readNum();sum+=masses[sym]*n}}return sum};const readNum=()=>{let m=f.slice(i).match(/^\d+/);if(m){i+=m[0].length;return +m[0]}return 1};let val=parseGroup();if(i<f.length)throw Error('Формуланы тексер');return val}document.getElementById('calcMass').onclick=()=>{let f=document.getElementById('formulaInput').value.replace(/\s/g,'');try{if(!f)throw Error('Химиялық формуланы енгіз.');let m=molarMass(f);document.getElementById('massResult').textContent=m.toFixed(2)+' г/моль';document.getElementById('massExplain').textContent=f+' формуласы бойынша молярлық масса есептелді.'}catch(e){document.getElementById('massResult').textContent='Қате';document.getElementById('massExplain').textContent=e.message}};document.getElementById('calcBasic').onclick=()=>{let x=document.getElementById('calcExpr').value;if(!/^[\d\s()+\-*/.]+$/.test(x)){document.getElementById('basicResult').textContent='Қате өрнек';return}try{let out=Function('"use strict";return ('+x+')')();if(!Number.isFinite(out))throw Error();document.getElementById('basicResult').textContent=Number(out.toFixed(8)).toString()}catch(e){document.getElementById('basicResult').textContent='Қате өрнек'}};
 function openPractice(){showPage('practice')}window.openPractice=openPractice;
 const accountBtn = document.getElementById('accountBtn');
