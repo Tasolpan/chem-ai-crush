@@ -648,6 +648,24 @@ document.getElementById('forgotPasswordBtn').onclick = async () => {
   document.getElementById('menuBtn').onclick = () => {
   document.getElementById('nav').classList.toggle('open');
 };
+document.getElementById('forgotPasswordBtn').onclick = async () => {
+  const email = document.getElementById('authEmail').value.trim();
+
+  if (!email) {
+    authMessage.textContent = 'Алдымен электрондық поштаңызды енгізіңіз.';
+    return;
+  }
+
+  authMessage.textContent = 'Сілтеме жіберіліп жатыр...';
+
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://tasolpan.github.io/chem-ai-crush/'
+  });
+
+  authMessage.textContent = error
+    ? 'Қате: ' + error.message
+    : 'Электрондық поштаңызды тексеріңіз.';
+};
 </script>
   
 <section class="page" id="page-classroom">
