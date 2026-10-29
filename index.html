@@ -896,21 +896,15 @@ document.getElementById('forgotPasswordBtn').onclick = async () => {
 
     document.getElementById('studentPanel').style.display =
       profile.role === 'student' ? 'block' : 'none';
-
     if (profile.role === 'teacher') {
-  await loadTeacherClasses(user.id);
-} else if (profile.role === 'student') {
-  await loadStudentClasses(user.id);
-  await loadStudentResults(user.id);
-} else {
-  document.getElementById('classroomWelcome').textContent =
-    'Аккаунт рөлі анықталмады. Мұғалімге немесе әкімшіге хабарласыңыз.';
-}
-}
+      await loadTeacherClasses(user.id);
+    } else if (profile.role === 'student') {
+      await loadStudentClasses(user.id);
+      await loadStudentResults(user.id);
+    } else {
       document.getElementById('classroomWelcome').textContent =
         'Аккаунт рөлі анықталмады. Мұғалімге немесе әкімшіге хабарласыңыз.';
     }
-  }
 
   async function loadTeacherClasses(userId) {
     const box = document.getElementById('teacherClasses');
