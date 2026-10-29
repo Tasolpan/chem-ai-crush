@@ -175,6 +175,7 @@
     <div class="modal-actions">
       <button class="btn primary" id="registerBtn" type="button">Тіркелу</button>
       <button class="btn" id="loginBtn" type="button">Кіру</button>
+      <button class="btn" id="forgotPasswordBtn" type="button">Құпиясөзді ұмыттым</button>
       <button class="btn" id="modalClose" type="button">Жабу</button>
     </div>
   </div>
@@ -621,7 +622,27 @@ document.getElementById('loginBtn').onclick = async () => {
   showPage(pendingPage);
 };
 
-document.getElementById('modalClose').onclick = () => {
+document.getElementById('forgotPasswordBtn').onclick = async () => {
+  const email = document.getElementById('authEmail').value.trim();
+
+  if (!email) {
+    authMessage.textContent = 'Алдымен электрондық поштаңызды енгізіңіз.';
+    return;
+  }
+
+  authMessage.textContent = 'Сілтеме жіберіліп жатыр...';
+
+  const { error } = await supabaseClient.auth.resetPasswordForEmail(email, {
+    redirectTo: 'https://tasolpan.github.io/chem-ai-crush/'
+  });
+
+  if (error) {
+    authMessage.textContent = 'Қате: ' + error.message;
+  } else {
+    authMessage.textContent = 'Электрондық поштаңызды тексеріңіз.';
+  }
+};
+  document.getElementById('modalClose').onclick = () => {
   loginModal.classList.remove('open');
 };
   document.getElementById('menuBtn').onclick = () => {
