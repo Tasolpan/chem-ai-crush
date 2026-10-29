@@ -198,13 +198,70 @@
     <p id="profileMessage"></p>
   </div>
 </div>
-<script>
+<div class="modal-backdrop" id="resetPasswordModal">
+  <div class="modal">
+    <h2>Жаңа құпиясөз орнату</h2>
+    <p>Жаңа құпиясөзіңізді екі рет енгізіңіз.</p>
+    <input id="newPassword" type="password"
+      placeholder="Жаңа құпиясөз (кемінде 6 таңба)">
+    <input id="confirmPassword" type="password"
+      placeholder="Құпиясөзді қайталаңыз">
+    <p id="resetPasswordMessage"></p>
+    <button class="btn primary" id="saveNewPasswordBtn" type="button">
+      Құпиясөзді сақтау
+    </button>
+  </div>
+</div>
+  <script>
 const SUPABASE_URL = 'https://skmdphfeyrqdmjlzyspe.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_FTMwRrptfPTP7qEwCTZ3Rw_MGaZhox_';
 const supabaseClient = window.supabase.createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
+    let recoveryMode = false;
+
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  if (event === 'PASSWORD_RECOVERY') {
+    recoveryMode = true;
+    document.getElementById('loginModal').classList.remove('open');
+    document.getElementById('profileModal').classList.remove('open');
+    document.getElementById('resetPasswordModal').classList.add('open');
+  }
+});
+
+document.getElementById('saveNewPasswordBtn').onclick = async () => {
+  const password = document.getElementById('newPassword').value;
+  const confirm = document.getElementById('confirmPassword').value;
+  const message = document.getElementById('resetPasswordMessage');
+
+  if (password.length < 6) {
+    message.textContent = 'Құпиясөз кемінде 6 таңбадан тұруы керек.';
+    return;
+  }
+
+  if (password !== confirm) {
+    message.textContent = 'Екі құпиясөз бірдей емес.';
+    return;
+  }
+
+  message.textContent = 'Құпиясөз сақталып жатыр...';
+
+  const { error } = await supabaseClient.auth.updateUser({
+    password: password
+  });
+
+  if (error) {
+    message.textContent = 'Қате: ' + error.message;
+    return;
+  }
+
+  recoveryMode = false;
+  document.getElementById('resetPasswordModal').classList.remove('open');
+  document.getElementById('newPassword').value = '';
+  document.getElementById('confirmPassword').value = '';
+  alert('Жаңа құпиясөз сәтті сақталды! Енді жаңа құпиясөзбен кіре аласыз.');
+};
 const topics=[
 {g:'7-сынып',icon:'⚛️',title:'Атомдар. Молекулалар. Заттар',desc:'Атом құрылысы, химиялық элементтер, жай және күрделі заттар.',kind:'Теория · Конспект · Тест'},
 {g:'7-сынып',icon:'🧬',title:'Изотоптар және атом құрамы',desc:'Протон, нейтрон, электрон, массалық сан және изотоптар.',kind:'Теория · Есептер'},
