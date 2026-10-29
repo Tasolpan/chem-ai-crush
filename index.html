@@ -899,8 +899,10 @@ document.getElementById('forgotPasswordBtn').onclick = async () => {
 
     if (profile.role === 'teacher') {
       await loadTeacherClasses(user.id);
-    } else if (profile.role === 'student') {
-      await loadStudentClasses(user.id);
+   } else if (profile.role === 'student') {
+  await loadStudentClasses(user.id);
+  await loadStudentResults(user.id);
+}
     } else {
       document.getElementById('classroomWelcome').textContent =
         'Аккаунт рөлі анықталмады. Мұғалімге немесе әкімшіге хабарласыңыз.';
@@ -953,7 +955,47 @@ document.getElementById('forgotPasswordBtn').onclick = async () => {
       </article>
     `).join('') : '<div class="empty-note">Сіз әзірге сыныпқа қосылмадыңыз.</div>';
   }
+async function loadStudentResults(userId) {
+  const box = document.getElementById('studentResults');
 
+  box.innerHTML = '<p class="muted">Нәтижелер жүктелуде...</p>';
+
+  const { data, error } = await supabaseClient
+    .from('test_attempts')
+    .select('correct_answers, total_questions, completed_at')
+    .eq('student_id', userId)
+    .order('completed_at', { ascending: false });
+
+  if (error) {
+    box.textContent = 'Нәтижелерді жүктеу қатесі: ' + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    box.innerHTML =
+      '<div class="empty-note">Сіз әлі тест тапсырған жоқсыз.</div>';
+    return;
+  }
+
+  box.innerHTML = data.map((item, index) => {
+    const date = item.completed_at
+      ? new Date(item.completed_at).toLocaleString('kk-KZ')
+      : 'Күні көрсетілмеген';
+
+    const percent = item.total_questions
+      ? Math.round(item.correct_answers / item.total_questions * 100)
+      : 0;
+
+    return `
+      <article class="card">
+        <h3>${index + 1}-тест нәтижесі</h3>
+        <p>Дұрыс жауап: <b>${item.correct_answers} / ${item.total_questions}</b></p>
+        <p>Нәтиже: <b>${percent}%</b></p>
+        <p class="muted">${date}</p>
+      </article>
+    `;
+  }).join('');
+}
   function escapeText(value) {
     return String(value ?? '').replace(/[&<>"']/g, ch => ({
       '&': '&amp;',
