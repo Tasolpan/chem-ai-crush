@@ -327,16 +327,18 @@ accountBtn.onclick = async () => {
   const { data: { user } } = await supabaseClient.auth.getUser();
 
   if (user) {
-    const meta = user.user_metadata || {};
 
-    document.getElementById('profileName').textContent =
-      'Аты-жөні: ' + (meta.full_name || 'Көрсетілмеген');
+    const { data: profile, error: profileError } = await supabaseClient
+  .from('profiles')
+  .select('full_name, role')
+  .eq('id', user.id)
+  .single();
 
-    document.getElementById('profileEmail').textContent =
-      'Электрондық пошта: ' + (user.email || '');
+document.getElementById('profileName').textContent =
+  'Аты-жөні: ' + (profile?.full_name || user.user_metadata?.full_name || 'Көрсетілмеген');
 
-    document.getElementById('profileRole').textContent =
-      'Рөлі: ' + (meta.role === 'teacher' ? 'Мұғалім' : 'Оқушы');
+document.getElementById('profileRole').textContent =
+  'Рөлі: ' + (profile?.role === 'teacher' ? 'Мұғалім' : 'Оқушы');
 
     document.getElementById('profileMessage').textContent = '';
     document.getElementById('profileModal').classList.add('open');
