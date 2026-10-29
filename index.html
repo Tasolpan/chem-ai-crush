@@ -138,7 +138,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
 </script>
 <div class="app">
-<header class="topbar"><div class="brand"><div class="brandmark">✦</div><div>Chem AI crush<small>АТОМНАН МОЛЕКУЛАҒА • ТЕОРИЯДАН ПРАКТИКАҒА</small></div></div><nav class="nav" id="nav"><button class="active" data-page="home">Басты бет</button><button data-page="theory">Теория</button><button data-page="practice">Практика</button><button data-page="periodic">Периодтық кесте</button><button data-page="tools">Құралдар</button></nav><div style="display:flex;gap:9px;align-items:center"><button class="lang" id="langBtn" aria-label="Тіл ауыстыру">ҚАЗ ▾</button><button class="lang" id="accountBtn">Кіру</button><button class="menu-btn" id="menuBtn">☰</button></div></header>
+<header class="topbar"><div class="brand"><div class="brandmark">✦</div><div>Chem AI crush<small>АТОМНАН МОЛЕКУЛАҒА • ТЕОРИЯДАН ПРАКТИКАҒА</small></div></div><nav class="nav" id="nav"><button class="active" data-page="home">Басты бет</button><button data-page="theory">Теория</button><button data-page="practice">Практика</button><button data-page="unt">ҰБТ сынақ тесті</button><button data-page="periodic">Периодтық кесте</button><button data-page="tools">Құралдар</button></nav><div style="display:flex;gap:9px;align-items:center"><button class="lang" id="langBtn" aria-label="Тіл ауыстыру">ҚАЗ ▾</button><button class="lang" id="accountBtn">Кіру</button><button class="menu-btn" id="menuBtn">☰</button></div></header>
 <main class="main">
 <section class="page active" id="page-home">
 <div class="hero"><div><div class="eyebrow"><span class="dot"></span> ҚАЗАҚША ҚОЛДАНБАЛЫ ҰБТ ПЛАТФОРМАСЫ</div><h1>Атомнан молекулаға.<br><span class="gradient">Теориядан практикаға.</span></h1><p>Химияны жаттап қана қоймай, түсініп үйрен. Қысқа теория, есептердің қадамдық шешімі және ҰБТ форматына жақын жаттығулар — бір жерде.</p><div class="actions"><button class="btn primary" data-goto="theory">Оқуды бастау ↗</button><button class="btn secondary" data-goto="practice">Тест тапсыру →</button></div></div><div class="hero-art"><div class="orbit"><div class="nucleus">⚛</div><i class="electron e1"></i><i class="electron e2"></i><i class="electron e3"></i></div><div class="float-tag tag1">H₂O · Су молекуласы</div><div class="float-tag tag2">p⁺ &nbsp; n⁰ &nbsp; e⁻</div></div></div>
@@ -150,7 +150,28 @@
 <section class="page" id="page-theory"><div class="page-title"><h1>Теория кітапханасы</h1><p>Химия тақырыптарын сынып пен бөлім бойынша зертте.</p></div><div class="toolbar"><select id="gradeFilter"><option value="all">Барлық сынып</option><option>7-сынып</option><option>8-сынып</option><option>9-сынып</option><option>10-сынып</option><option>11-сынып</option></select><input id="topicSearch" placeholder="Тақырыпты іздеу…"></div><div class="topic-list" id="topicList"></div></section>
 <section class="page" id="page-topic-detail"><button class="btn" style="background:#edf3f8;color:var(--ink);margin-bottom:18px" onclick="showPage('theory')">← Теория кітапханасына оралу</button><div id="topicDetailContent"></div></section>
 <section class="page" id="page-practice"><div class="page-title"><h1>Біліміңді тексер</h1><p>Қысқа жаттығу. Әр жауаптан кейін түсіндірме беріледі.</p></div><div class="notice">Бұл — демонстрациялық жаттығу. Мұндағы сұрақтар ресми ҰБТ сұрақтары емес.</div><div class="panel" id="quizPanel"><div style="display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px"><span id="quizCount">1-сұрақ / 5</span><span id="quizScore">Ұпай: 0</span></div><div class="progress" style="margin-top:12px"><span id="quizProgress" style="width:20%"></span></div><h2 class="quiz-question" id="quizQuestion"></h2><div class="answers" id="answers"></div><div id="feedback"></div><div style="display:flex;justify-content:space-between;margin-top:18px;gap:10px"><button class="btn" style="background:#edf3f8;color:var(--ink)" id="restartQuiz">Қайта бастау</button><button class="btn primary" id="nextQuestion" disabled>Келесі сұрақ →</button></div></div></section>
-<section class="page" id="page-periodic"><div class="page-title"><h1>Периодтық кесте</h1><p>118 элементтің интерактивті периодтық кестесі. Элементті басып, оның қасиеттерін зертте.</p></div><div class="panel" style="margin-bottom:15px"><div id="elementInfo"><b>Элементті таңда</b><p class="muted" style="margin-bottom:0;font-size:13px">Таңдалған элементтің таңбасы, реттік нөмірі және салыстырмалы атомдық массасы осында көрсетіледі.</p></div></div><div class="periodic-wrap">
+<section class="page" id="page-unt">
+  <div class="page-title">
+    <h1>ҰБТ сынақ тесті</h1>
+    <p>Химия пәнінен 40 тапсырмалық сынақ</p>
+  </div>
+
+  <div class="card">
+    <h2>ҰБТ форматы — 2026</h2>
+    <p>25 бір дұрыс жауапты тапсырма</p>
+    <p>5 контекст негізіндегі тапсырма</p>
+    <p>5 бір немесе бірнеше дұрыс жауапты тапсырма</p>
+    <p>5 сәйкестендіру тапсырмасы</p>
+    <p><strong>Уақыты:</strong> 80 минут</p>
+    <button class="btn btn-primary" id="startUntBtn" type="button">
+      Тестті бастау
+    </button>
+    <p id="untMessage"></p>
+  </div>
+
+  <div id="untTestArea"></div>
+</section>
+  <section class="page" id="page-periodic"><div class="page-title"><h1>Периодтық кесте</h1><p>118 элементтің интерактивті периодтық кестесі. Элементті басып, оның қасиеттерін зертте.</p></div><div class="panel" style="margin-bottom:15px"><div id="elementInfo"><b>Элементті таңда</b><p class="muted" style="margin-bottom:0;font-size:13px">Таңдалған элементтің таңбасы, реттік нөмірі және салыстырмалы атомдық массасы осында көрсетіледі.</p></div></div><div class="periodic-wrap">
   <div class="periodic" id="periodicGrid"></div>
 </div><p class="muted" style="font-size:12px;margin-top:12px">Түстер: көк — металдар, жасыл — бейметалдар, күлгін — жартылай металдар. Кестеде 118 химиялық элемент берілген. Элементті басып, атомдық массасы мен электрондық конфигурациясын қара.</p></section>
 <section class="page" id="page-tools"><div class="page-title"><h1>Химия құралдары</h1><p>Қарапайым есептеулерге арналған оқу құралдары.</p></div><div class="calc-grid"><div class="panel"><h3 style="margin-top:0">Молярлық масса калькуляторы</h3><p class="muted" style="font-size:13px">Формуланы енгіз: H2O, CO2, NaCl, H2SO4.</p><input class="calc-input" id="formulaInput" style="width:100%" value="H2O" placeholder="Мысалы: H2O"><button class="btn primary" id="calcMass" style="margin-top:12px">Есептеу</button><div class="calc-result" id="massResult">18.02 г/моль</div><p class="muted" id="massExplain" style="font-size:12px">H₂O құрамындағы атомдардың салыстырмалы массалары қосылады.</p></div><div class="panel"><h3 style="margin-top:0">Жылдам калькулятор</h3><input class="calc-input" id="calcExpr" style="width:100%" value="2 * (18 + 16)" placeholder="Мысалы: 2*(18+16)"><button class="btn primary" id="calcBasic" style="margin-top:12px">Есептеу</button><div class="calc-result" id="basicResult">68</div><p class="muted" style="font-size:12px">Қосу, азайту, көбейту, бөлу және жақшаларды қолдайды.</p></div></div><div class="section-head"><div><h2>Ерігіштік кестесі</h2><p>Ерігіштік ережелеріне арналған бөлім.</p></div></div><div class="card"><h3 style="margin-top:0">Есте сақта</h3><p class="muted" style="line-height:1.7;font-size:14px">Көптеген нитраттар (NO₃⁻) суда ериді. Сілтілік металдардың тұздары көбіне еритін болады. Ерекше жағдайларды нақты ерігіштік кестесімен тексер.</p><div class="empty-note">Толық интерактивті ерігіштік кестесі келесі нұсқада қосылады.</div></div></section>
