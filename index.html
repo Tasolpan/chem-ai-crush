@@ -699,7 +699,12 @@ document.getElementById('modalClose').onclick = () => {
     button.textContent = 'Оқу кабинеті';
     button.dataset.page = 'classroom';
     nav.appendChild(button);
-    button.addEventListener('click', () => showPage('classroom'));
+    button.addEventListener('click', async () => {
+  await showPage('classroom');
+  if (typeof window.loadClassroom === 'function') {
+    await window.loadClassroom();
+  }
+});
   }
 
   document.getElementById('createClassBtn').onclick = async function () {
