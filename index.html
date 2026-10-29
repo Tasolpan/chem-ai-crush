@@ -1030,34 +1030,204 @@ async function loadStudentResults(userId) {
     setTimeout(loadClassroom, 0);
   });
 })();
-// CHEM AI CRUSH — ҰБТ тестін іске қосу
-document.getElementById('startUntBtn')?.addEventListener('click', async () => {
+// CHEM AI CRUSH — толық ҰБТ сынақ тесті
+(() => {
+  const startBtn = document.getElementById('startUntBtn');
   const message = document.getElementById('untMessage');
   const area = document.getElementById('untTestArea');
+  if (!startBtn || !message || !area) return;
 
-  message.textContent = 'Сұрақтар базасы тексерілуде...';
-  area.innerHTML = '';
+  let untQuestions = [];
+  let untStartedAt = 0;
+  let untTimer = null;
+  let untFinished = false;
+  const UNT_SECONDS = 80 * 60;
 
-  const { data, error } = await supabaseClient.rpc(
-    'get_unused_chemistry_questions',
-    { p_limit: 40 }
-  );
+  const esc = (value) => String(value ?? '').replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  })[ch]);
 
-  if (error) {
-    message.textContent = 'Қате: ' + error.message;
-    return;
+  function normalizeCorrect(q) {
+    let value = q.correct_answers;
+    if (typeof value === 'string') {
+      try { value = JSON.parse(value); } catch (_) { value = [value]; }
+    }
+    if (value && !Array.isArray(value) && typeof value === 'object') return value;
+    return Array.isArray(value) ? value.map(String) : [String(value ?? '')];
   }
 
-  if (!data || data.length === 0) {
-    message.textContent =
-      'Әзірге тестке дайын, тексерілген сұрақтар жоқ. Сұрақтарды тексеру қажет.';
-    return;
+  function optionsFor(q) {
+    let value = q.answer_options;
+    if (typeof value === 'string') {
+      try { value = JSON.parse(value); } catch (_) { value = []; }
+    }
+    if (Array.isArray(value)) return value.map(String);
+    if (value && typeof value === 'object') {
+      return Object.keys(value).sort((a,b) => Number(a)-Number(b)).map(k => String(value[k]));
+    }
+    return [];
   }
 
-  message.textContent =
-    'Базадан ' + data.length + ' тексерілген сұрақ табылды. Тестті толық іске қосу үшін сұрақтарды іріктеу және жауаптарды тексеру қажет.';
-});
-</script>
+  function renderQuestion(q, i) {
+    const opts = optionsFor(q);
+    const type = q.question_type || 'single';
+    const multi = type === 'multiple';
+    const matching = type === 'matching';
+    const name = 'unt-q-' + i;
+    const context = q.context_text
+      ? `<div class="card" style="background:#f4f8fc;margin:10px 0"><b>Контекст</b><p style="white-space:pre-wrap;line-height:1.65">${esc(q.context_text)}</p></div>`
+      : '';
+    let answerHtml = '';
+    if (matching) {
+      let pairs = q.matching_pairs;
+      if (typeof pairs === 'string') { try { pairs = JSON.parse(pairs); } catch (_) { pairs = null; } }
+      let rawOptions = q.answer_options;
+      if (typeof rawOptions === 'string') { try { rawOptions = JSON.parse(rawOptions); } catch (_) { rawOptions = null; } }
+      const left = Array.isArray(pairs?.left) ? pairs.left : (Array.isArray(rawOptions?.left) ? rawOptions.left : opts);
+      const right = Array.isArray(pairs?.right) ? pairs.right : (Array.isArray(rawOptions?.right) ? rawOptions.right : []);
+      if (left.length && right.length) {
+        answerHtml = `<div class="toolbar">${left.map((v,j) => `<label class="card" style="display:grid;gap:7px"><b>${esc(v)}</b><select data-match="${j}" aria-label="Сәйкестендіру ${j+1}"><option value="">Таңдаңыз</option>${right.map((r,k)=>`<option value="${k}">${String.fromCharCode(65+k)}. ${esc(r)}</option>`).join('')}</select></label>`).join('')}</div>`;
+      } else {
+        answerHtml = `<p class="muted">Сәйкестендіру нұсқалары базада толық берілмеген. Бұл сұрақты әкімші тексеруі қажет.</p>`;
+      }
+    } else {
+      answerHtml = `<div class="answers">${opts.map((opt,j)=>`<label class="answer" style="cursor:pointer"><input type="${multi?'checkbox':'radio'}" name="${name}" value="${j}"><span class="letter">${String.fromCharCode(65+j)}</span><span>${esc(opt)}</span></label>`).join('')}</div>`;
+      if (multi) answerHtml += '<p class="muted" style="font-size:12px">Бір немесе бірнеше дұрыс жауапты таңдаңыз.</p>';
+    }
+    return `<article class="panel" style="margin:14px 0" data-unt-question="${i}">
+      <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><b>${i+1}-сұрақ</b><span class="muted">${esc(q.topic || 'Химия')} · ${esc(q.difficulty || '—')} деңгей</span></div>
+      ${context}<h3 style="font-size:17px;line-height:1.55">${esc(q.question_text)}</h3>${answerHtml}
+      <details style="margin-top:10px"><summary class="muted">Сұрақ туралы</summary><p class="muted">${esc(type==='context'?'Контекстік тапсырма':type==='multiple'?'Көп таңдаулы тапсырма':type==='matching'?'Сәйкестендіру тапсырмасы':'Бір дұрыс жауапты тапсырма')}</p></details>
+    </article>`;
+  }
+
+  function getUserAnswer(q, i) {
+    const root = area.querySelector(`[data-unt-question="${i}"]`);
+    if (!root) return null;
+    if (q.question_type === 'matching') {
+      const result = {};
+      root.querySelectorAll('[data-match]').forEach(el => {
+        if (el.value !== '') result[el.dataset.match] = Number(el.value);
+      });
+      return result;
+    }
+    const selected = [...root.querySelectorAll(`input[name="unt-q-${i}"]:checked`)].map(el => String(el.value));
+    return q.question_type === 'multiple' ? selected.sort() : (selected[0] ?? null);
+  }
+
+  function isCorrect(q, answer) {
+    const correct = normalizeCorrect(q);
+    if (q.question_type === 'matching') {
+      if (!answer || typeof answer !== 'object' || Array.isArray(answer)) return false;
+      const keys = Object.keys(correct).sort();
+      const ansKeys = Object.keys(answer).sort();
+      return keys.length > 0 && keys.length === ansKeys.length &&
+        keys.every(k => String(answer[k]) === String(correct[k]));
+    }
+    if (q.question_type === 'multiple') {
+      if (!Array.isArray(answer)) return false;
+      const a = answer.map(String).sort();
+      const c = correct.map(String).sort();
+      return a.length === c.length && a.every((v,j)=>v===c[j]);
+    }
+    return answer !== null && correct.length > 0 && String(answer) === String(correct[0]);
+  }
+
+  function showTimer() {
+    const timer = document.getElementById('untTimer');
+    if (!timer || untFinished) return;
+    const left = Math.max(0, UNT_SECONDS - Math.floor((Date.now()-untStartedAt)/1000));
+    timer.textContent = `Қалған уақыт: ${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`;
+    if (left <= 0) finishTest(true);
+  }
+
+  async function startTest() {
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) {
+      message.textContent = 'ҰБТ тестін бастау үшін аккаунтқа кіріңіз.';
+      document.getElementById('loginModal')?.classList.add('open');
+      return;
+    }
+    startBtn.disabled = true;
+    message.textContent = 'Тексерілген ҰБТ сұрақтары жүктелуде...';
+    area.innerHTML = '';
+    const { data, error } = await supabaseClient.rpc('get_unt_test_questions');
+    if (error) {
+      message.textContent = 'Сұрақтарды жүктеу қатесі: ' + error.message + '. Supabase-та get_unt_test_questions функциясы мен рұқсаттарын тексеріңіз.';
+      startBtn.disabled = false;
+      return;
+    }
+    if (!Array.isArray(data) || data.length < 40) {
+      message.textContent = `Тестті бастау мүмкін емес: базадан ${data?.length || 0}/40 тексерілген және бұрын қолданылмаған сұрақ табылды. Сұрақтар базасында 40 сұрақтың verified=true болуы және source='unt_2026_v1' шартына сай келуі қажет.`;
+      startBtn.disabled = false;
+      return;
+    }
+    untQuestions = data.slice(0,40);
+    untFinished = false;
+    untStartedAt = Date.now();
+    message.textContent = 'Тест басталды. Барлық жауапты белгілеп, соңында нәтижені жіберіңіз.';
+    area.innerHTML = `<div class="card" style="position:sticky;top:82px;z-index:5;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><b id="untTimer">Қалған уақыт: 80:00</b><span>40 тапсырма · 80 минут</span><button class="btn primary" id="submitUntBtn" type="button">Тестті аяқтау</button></div>` +
+      untQuestions.map(renderQuestion).join('') +
+      '<div class="card"><button class="btn primary" id="submitUntBottom" type="button">Жауаптарды жіберу және нәтижені көру</button></div>';
+    document.getElementById('submitUntBtn').onclick = () => finishTest(false);
+    document.getElementById('submitUntBottom').onclick = () => finishTest(false);
+    if (untTimer) clearInterval(untTimer);
+    showTimer();
+    untTimer = setInterval(showTimer, 1000);
+    area.scrollIntoView({behavior:'smooth',block:'start'});
+  }
+
+  async function finishTest(timeExpired) {
+    if (untFinished || !untQuestions.length) return;
+    untFinished = true;
+    if (untTimer) clearInterval(untTimer);
+    const answers = untQuestions.map((q,i) => {
+      const answer = getUserAnswer(q,i);
+      return {
+        question_id: q.id,
+        question: q.question_text,
+        question_type: q.question_type,
+        selected_answer: answer,
+        correct_answer: q.correct_answers,
+        is_correct: isCorrect(q,answer)
+      };
+    });
+    const correct = answers.filter(a=>a.is_correct).length;
+    const percent = Math.round(correct / untQuestions.length * 100);
+    area.querySelectorAll('input,select,button').forEach(el => { if (el.id !== 'againUntBtn') el.disabled = true; });
+    message.textContent = timeExpired ? 'Уақыт аяқталды. Нәтиже есептелді.' : 'Тест аяқталды. Нәтиже есептелді.';
+
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    let saveMessage = 'Нәтиже бұл жолы сақталмады.';
+    if (user) {
+      const { error: saveError } = await supabaseClient.from('test_attempts').insert({
+        student_id: user.id,
+        correct_answers: correct,
+        total_questions: untQuestions.length,
+        answers: answers
+      });
+      if (saveError) {
+        saveMessage = 'Нәтижені сақтау қатесі: ' + saveError.message;
+      } else {
+        saveMessage = 'Нәтиже Supabase жүйесіне сақталды.';
+      }
+      const ids = untQuestions.map(q=>String(q.id));
+      const { error: historyError } = await supabaseClient.rpc('record_chemistry_question_usage', { p_question_ids: ids });
+      if (historyError) saveMessage += ' Сұрақтар тарихын сақтау ескертуі: ' + historyError.message;
+    }
+    const review = answers.map((a,i) => `<div class="card" style="margin:10px 0"><b>${i+1}. ${esc(a.question)}</b><p style="color:${a.is_correct?'#126749':'#b4232c'}">${a.is_correct?'Дұрыс жауап':'Қате немесе жауап берілмеген'}</p>${a.is_correct?'':`<p class="muted">Дұрыс жауап коды: ${esc(JSON.stringify(a.correct_answer))}</p>`}${esc(untQuestions[i].explanation || '')}</div>`).join('');
+    area.innerHTML = `<div class="panel" style="text-align:center"><div style="font-size:42px">${percent>=80?'🎉':'🧪'}</div><h2>ҰБТ сынақ тестінің нәтижесі</h2><div style="font-size:42px;font-weight:900;color:#087e9b">${correct} / 40</div><p style="font-size:20px;font-weight:800">${percent}%</p><p>Дұрыс жауап: ${correct} · Қате немесе бос жауап: ${40-correct}</p><p class="muted">${timeExpired?'Уақыт аяқталды.':'Тест аяқталды.'}</p><p class="muted">${esc(saveMessage)}</p><button class="btn primary" id="againUntBtn">Қайта тест тапсыру</button></div><div class="section-head"><div><h2>Жауаптарды талдау</h2><p>Қате кеткен сұрақтарды қайталаңыз.</p></div></div>${review}`;
+    document.getElementById('againUntBtn').onclick = () => {
+      untQuestions = [];
+      area.innerHTML = '';
+      message.textContent = 'Жаңа тест бастауға дайын.';
+      startBtn.disabled = false;
+      startTest();
+    };
+    startBtn.disabled = false;
+  }
+  startBtn.addEventListener('click', startTest);
+})();</script>
   
 <!-- CHEM AI CRUSH: TEACHER DASHBOARD -->
 <!-- END TEACHER DASHBOARD -->
