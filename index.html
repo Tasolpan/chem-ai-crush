@@ -279,15 +279,164 @@ async function saveQuizResult() {
   }
 }
 
-function renderQuiz() {let q=quiz[qi];document.getElementById('quizCount').textContent =
-  `${qi + 1}-сұрақ / ${quiz.length}`;document.getElementById('quizScore').textContent='Ұпай: '+score;document.getElementById('quizProgress').style.width=((qi+1)/quiz.length*100)+'%';document.getElementById('quizQuestion').textContent=q.q;document.getElementById('feedback').innerHTML='';document.getElementById('nextQuestion').disabled=true;document.getElementById('nextQuestion').textContent=qi===quiz.length-1?'Қорытындыны көру':'Келесі сұрақ →';answered=false; document.getElementById('answers').innerHTML =
-  q.a.map((a, i) =>
-    `<button class="answer" data-answer="${i}">
-      <span class="letter">${'ABCD'[i]}</span>
-      <span>${a}</span>
-    </button>`
-  ).join('');`<button class="answer" data-answer="${i}"><span class="letter">${'ABCD'[i]}</span><span>${a}</span></button>`).join('');document.querySelectorAll('[data-answer]').forEach(b=>b.onclick=()=>answerQuiz(+b.dataset.answer))}function answerQuiz(i){if(answered)return;answered=true;let q=quiz[qi];userAnswers.push({question:q.q,selected_answer:i,correct_answer:q.c,is_correct:i===q.c});document.querySelectorAll('[data-answer]').forEach((b,j)=>{b.disabled=true;if(j===q.c)b.classList.add('correct');else if(j===i)b.classList.add('wrong')});if(i===q.c)score++;document.getElementById('quizScore').textContent='Ұпай: '+score;document.getElementById('feedback').innerHTML=`<div class="feedback"><b>${i===q.c?'Дұрыс жауап!':'Қайта қарап көр!'}</b><br>${q.e}</div>`;document.getElementById('nextQuestion').disabled=false}document.getElementById('nextQuestion').onclick=async()=>{if(qi<quiz.length-1){qi++;renderQuiz()}else{await saveQuizResult();document.getElementById('quizPanel').innerHTML=`<div style="text-align:center;padding:28px 10px"><div style="font-size:44px">${score>=4?'🎉':'🧪'}</div><h2>Жаттығу аяқталды!</h2><div style="font-size:38px;font-weight:900;color:#087e9b">${score} / ${quiz.length}</div><p class="muted">${score>=4?'Жарайсың! Біліміңді әрі қарай бекіт.':'Қателерді қарап, қайта жаттығып көр.'}</p><button class="btn primary" id="again">Қайта тапсыру</button></div>`;document.getElementById('again').onclick=restartQuiz}};function restartQuiz(){qi=0;score=0;document.getElementById('quizPanel').innerHTML='<div style="display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px"><span id="quizCount"></span><span id="quizScore"></span></div><div class="progress" style="margin-top:12px"><span id="quizProgress" style="width:20%"></span></div><h2 class="quiz-question" id="quizQuestion"></h2><div class="answers" id="answers"></div><div id="feedback"></div><div style="display:flex;justify-content:space-between;margin-top:18px;gap:10px"><button class="btn" style="background:#edf3f8;color:var(--ink)" id="restartQuiz">Қайта бастау</button><button class="btn primary" id="nextQuestion" disabled>Келесі сұрақ →</button></div>';document.getElementById('restartQuiz').onclick=restartQuiz;document.getElementById('nextQuestion').onclick=async()=>{if(qi<quiz.length-1){qi++;renderQuiz()}else{await saveQuizResult();document.getElementById('quizPanel').innerHTML=`<div style="text-align:center;padding:28px 10px"><h2>Жаттығу аяқталды!</h2><div class="calc-result">${score} / ${quiz.length}</div><button class="btn primary" onclick="restartQuiz()">Қайта тапсыру</button></div>`}};renderQuiz()}document.getElementById('restartQuiz').onclick=restartQuiz;renderQuiz();
+function renderQuiz() {
+  const q = quiz[qi];
 
+  document.getElementById('quizCount').textContent =
+    `${qi + 1}-сұрақ / ${quiz.length}`;
+
+  document.getElementById('quizScore').textContent =
+    'Ұпай: ' + score;
+
+  document.getElementById('quizProgress').style.width =
+    ((qi + 1) / quiz.length * 100) + '%';
+
+  document.getElementById('quizQuestion').textContent = q.q;
+  document.getElementById('feedback').innerHTML = '';
+
+  const nextButton = document.getElementById('nextQuestion');
+  nextButton.disabled = true;
+  nextButton.textContent =
+    qi === quiz.length - 1 ? 'Қорытындыны көру' : 'Келесі сұрақ →';
+
+  answered = false;
+
+  document.getElementById('answers').innerHTML =
+    q.a.map((a, i) => `
+      <button class="answer" data-answer="${i}">
+        <span class="letter">${'ABCD'[i]}</span>
+        <span>${a}</span>
+      </button>
+    `).join('');
+
+  document.querySelectorAll('#answers [data-answer]').forEach(button => {
+  button.onclick = () => answerQuiz(Number(button.dataset.answer));
+});
+}
+
+function answerQuiz(i) {
+  if (answered) return;
+
+  answered = true;
+  const q = quiz[qi];
+
+  userAnswers.push({
+    question: q.q,
+    selected_answer: i,
+    correct_answer: q.c,
+    is_correct: i === q.c
+  });
+
+  document.querySelectorAll('#answers [data-answer]').forEach((button, j) => {
+    button.disabled = true;
+
+    if (j === q.c) {
+      button.classList.add('correct');
+    } else if (j === i) {
+      button.classList.add('wrong');
+    }
+  });
+
+  if (i === q.c) score++;
+
+  document.getElementById('quizScore').textContent = 'Ұпай: ' + score;
+
+  document.getElementById('feedback').innerHTML = `
+    <div class="feedback">
+      <b>${i === q.c ? 'Дұрыс жауап!' : 'Қайта қарап көр!'}</b><br>
+      ${q.e}
+    </div>
+  `;
+
+  document.getElementById('nextQuestion').disabled = false;
+}
+
+document.getElementById('nextQuestion').onclick = async function () {
+  if (qi < quiz.length - 1) {
+    qi++;
+    renderQuiz();
+  } else {
+    await saveQuizResult();
+
+    document.getElementById('quizPanel').innerHTML = `
+      <div style="text-align:center;padding:28px 10px">
+        <div style="font-size:44px">${score >= 4 ? '🎉' : '🧪'}</div>
+        <h2>Жаттығу аяқталды!</h2>
+        <div style="font-size:38px;font-weight:900;color:#087e9b">
+          ${score} / ${quiz.length}
+        </div>
+        <p class="muted">
+          ${score >= 4
+            ? 'Жарайсың! Біліміңді әрі қарай бекіт.'
+            : 'Қателерді қарап, қайта жаттығып көр.'}
+        </p>
+        <button class="btn primary" id="again">Қайта тапсыру</button>
+      </div>
+    `;
+
+    document.getElementById('again').onclick = restartQuiz;
+  }
+};
+
+function restartQuiz() {
+  qi = 0;
+  score = 0;
+  answered = false;
+  userAnswers = [];
+
+  document.getElementById('quizPanel').innerHTML = `
+    <div style="display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px">
+      <span id="quizCount"></span>
+      <span id="quizScore"></span>
+    </div>
+
+    <div class="progress" style="margin-top:12px">
+      <span id="quizProgress" style="width:20%"></span>
+    </div>
+
+    <h2 class="quiz-question" id="quizQuestion"></h2>
+    <div class="answers" id="answers"></div>
+    <div id="feedback"></div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:18px;gap:10px">
+      <button class="btn" id="restartQuiz"
+        style="background:#edf3f8;color:var(--ink)">
+        Қайта бастау
+      </button>
+
+      <button class="btn primary" id="nextQuestion" disabled>
+        Келесі сұрақ →
+      </button>
+    </div>
+  `;
+
+  document.getElementById('restartQuiz').onclick = restartQuiz;
+
+  document.getElementById('nextQuestion').onclick = async function () {
+    if (qi < quiz.length - 1) {
+      qi++;
+      renderQuiz();
+    } else {
+      await saveQuizResult();
+
+      document.getElementById('quizPanel').innerHTML = `
+        <div style="text-align:center;padding:28px 10px">
+          <h2>Жаттығу аяқталды!</h2>
+          <div class="calc-result">${score} / ${quiz.length}</div>
+          <button class="btn primary" onclick="restartQuiz()">
+            Қайта тапсыру
+          </button>
+        </div>
+      `;
+    }
+  };
+
+  renderQuiz();
+}
+
+document.getElementById('restartQuiz').onclick = restartQuiz;
+
+renderQuiz();
 let els = [];
 
 async function renderPeriodic() {
