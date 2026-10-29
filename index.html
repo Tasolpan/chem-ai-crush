@@ -1030,6 +1030,33 @@ async function loadStudentResults(userId) {
     setTimeout(loadClassroom, 0);
   });
 })();
+// CHEM AI CRUSH — ҰБТ тестін іске қосу
+document.getElementById('startUntBtn')?.addEventListener('click', async () => {
+  const message = document.getElementById('untMessage');
+  const area = document.getElementById('untTestArea');
+
+  message.textContent = 'Сұрақтар базасы тексерілуде...';
+  area.innerHTML = '';
+
+  const { data, error } = await supabaseClient.rpc(
+    'get_unused_chemistry_questions',
+    { p_limit: 40 }
+  );
+
+  if (error) {
+    message.textContent = 'Қате: ' + error.message;
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    message.textContent =
+      'Әзірге тестке дайын, тексерілген сұрақтар жоқ. Сұрақтарды тексеру қажет.';
+    return;
+  }
+
+  message.textContent =
+    'Базадан ' + data.length + ' тексерілген сұрақ табылды. Тестті толық іске қосу үшін сұрақтарды іріктеу және жауаптарды тексеру қажет.';
+});
 </script>
   
 <!-- CHEM AI CRUSH: TEACHER DASHBOARD -->
