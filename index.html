@@ -179,6 +179,24 @@
     </div>
   </div>
 </div>
+<div class="modal-backdrop" id="profileModal">
+  <div class="modal">
+    <h2>👤 Жеке кабинет</h2>
+    <p id="profileName">Пайдаланушы</p>
+    <p id="profileEmail"></p>
+    <p id="profileRole"></p>
+
+    <div class="modal-actions">
+      <button class="btn primary" id="logoutBtn" type="button">
+        Аккаунттан шығу
+      </button>
+      <button class="btn" id="profileClose" type="button">
+        Жабу
+      </button>
+    </div>
+    <p id="profileMessage"></p>
+  </div>
+</div>
 <script>
 const SUPABASE_URL = 'https://skmdphfeyrqdmjlzyspe.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_FTMwRrptfPTP7qEwCTZ3Rw_MGaZhox_';
@@ -305,9 +323,45 @@ updateAccountButton();
 supabaseClient.auth.onAuthStateChange((_event, session) => {
   accountBtn.textContent = session?.user ? 'Аккаунт' : 'Кіру';
 });
-accountBtn.onclick = () => {
-  loginModal.classList.add('open');
-  authMessage.textContent = '';
+accountBtn.onclick = async () => {
+  const { data: { user } } = await supabaseClient.auth.getUser();
+
+  if (user) {
+    const meta = user.user_metadata || {};
+
+    document.getElementById('profileName').textContent =
+      'Аты-жөні: ' + (meta.full_name || 'Көрсетілмеген');
+
+    document.getElementById('profileEmail').textContent =
+      'Электрондық пошта: ' + (user.email || '');
+
+    document.getElementById('profileRole').textContent =
+      'Рөлі: ' + (meta.role === 'teacher' ? 'Мұғалім' : 'Оқушы');
+
+    document.getElementById('profileMessage').textContent = '';
+    document.getElementById('profileModal').classList.add('open');
+  } else {
+    loginModal.classList.add('open');
+    authMessage.textContent = '';
+  }
+};
+
+document.getElementById('profileClose').onclick = () => {
+  document.getElementById('profileModal').classList.remove('open');
+};
+
+document.getElementById('logoutBtn').onclick = async () => {
+  const { error } = await supabaseClient.auth.signOut();
+
+  if (error) {
+    document.getElementById('profileMessage').textContent =
+      'Шығу қатесі: ' + error.message;
+    return;
+  }
+
+  document.getElementById('profileModal').classList.remove('open');
+  accountBtn.textContent = 'Кіру';
+  showPage('home');
 };
 document.getElementById('registerBtn').onclick = async () => {
   const fullName = document.getElementById('authName').value.trim();
