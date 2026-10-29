@@ -628,5 +628,247 @@ document.getElementById('modalClose').onclick = () => {
   document.getElementById('nav').classList.toggle('open');
 };
 </script>
+  
+<section class="page" id="page-classroom">
+  <div class="page-title">
+    <h1>🧪 Оқу кабинеті</h1>
+    <p id="classroomWelcome">Chem AI crush — сыныптарды басқару</p>
+  </div>
+
+  <div class="panel" id="teacherPanel" style="display:none;margin-bottom:16px">
+    <h2>👩‍🏫 Мұғалім кабинеті</h2>
+    <p class="muted">Сынып құрыңыз және оқушылардың өтініштерін басқарыңыз.</p>
+
+    <label for="newClassName">Жаңа сынып атауы</label>
+    <input id="newClassName" placeholder="Мысалы: 11А — химия"
+      style="width:100%;padding:12px;border:1px solid #e2eaf3;border-radius:11px;margin:8px 0">
+
+    <button class="btn primary" id="createClassBtn">+ Сынып құру</button>
+    <p id="createClassMessage" class="muted"></p>
+
+    <h3>Менің сыныптарым</h3>
+    <div id="teacherClasses" class="topic-list">
+      <p class="muted">Сыныптар жүктеледі...</p>
+    </div>
+
+    <h3 style="margin-top:24px">Оқушылардың өтініштері</h3>
+    <div id="classRequests" class="topic-list">
+      <p class="muted">Өтініштер жүктеледі...</p>
+    </div>
+
+    <h3 style="margin-top:24px">Оқушылардың тест нәтижелері</h3>
+    <div id="classResults" class="topic-list">
+      <p class="muted">Нәтижелер бөлімі әзірге қосылуда.</p>
+    </div>
+  </div>
+
+  <div class="panel" id="studentPanel" style="display:none">
+    <h2>👨‍🎓 Оқушы кабинеті</h2>
+    <p class="muted">Мұғалім берген сынып кодын енгізіңіз.</p>
+
+    <input id="joinClassCode" placeholder="8 таңбалы сынып коды"
+      maxlength="8" autocapitalize="characters"
+      style="width:100%;padding:12px;border:1px solid #e2eaf3;border-radius:11px;margin:8px 0">
+
+    <div class="actions">
+      <button class="btn primary" id="joinClassBtn">Бірден қосылу</button>
+      <button class="btn" id="requestClassBtn"
+        style="background:#edf3f8;color:#17243b">Өтініш жіберу</button>
+    </div>
+
+    <p id="studentJoinMessage" class="muted"></p>
+
+    <h3>Менің сыныптарым</h3>
+    <div id="studentClasses" class="topic-list">
+      <p class="muted">Сыныптар жүктеледі...</p>
+    </div>
+
+    <h3 style="margin-top:24px">Менің тест нәтижелерім</h3>
+    <div id="studentResults" class="topic-list">
+      <p class="muted">Нәтижелер бөлімі әзірге қосылуда.</p>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  const nav = document.getElementById('nav');
+
+  if (!document.querySelector('[data-page="classroom"]')) {
+    const button = document.createElement('button');
+    button.textContent = 'Оқу кабинеті';
+    button.dataset.page = 'classroom';
+    nav.appendChild(button);
+    button.addEventListener('click', () => showPage('classroom'));
+  }
+
+  document.getElementById('createClassBtn').onclick = async function () {
+    const message = document.getElementById('createClassMessage');
+    const name = document.getElementById('newClassName').value.trim();
+
+    if (!name) {
+      message.textContent = 'Сынып атауын енгізіңіз.';
+      return;
+    }
+
+    message.textContent = 'Сынып құрылып жатыр...';
+
+    const { data, error } = await supabaseClient.rpc('create_class', {
+      p_class_name: name
+    });
+
+    if (error) {
+      message.textContent = 'Қате: ' + error.message;
+      return;
+    }
+
+    const item = Array.isArray(data) ? data[0] : data;
+
+    message.textContent = item
+      ? 'Сынып құрылды! Код: ' + item.join_code
+      : 'Сынып құрылды. Тізімді жаңартыңыз.';
+
+    document.getElementById('newClassName').value = '';
+    loadClassroom();
+  };
+
+  document.getElementById('joinClassBtn').onclick = async function () {
+    await joinClass('join_class_by_code');
+  };
+
+  document.getElementById('requestClassBtn').onclick = async function () {
+    await joinClass('request_class_join');
+  };
+
+  async function joinClass(functionName) {
+    const message = document.getElementById('studentJoinMessage');
+    const code = document.getElementById('joinClassCode').value.trim();
+
+    if (!code) {
+      message.textContent = 'Сынып кодын енгізіңіз.';
+      return;
+    }
+
+    message.textContent = 'Сұраныс орындалып жатыр...';
+
+    const { data, error } = await supabaseClient.rpc(functionName, {
+      p_code: code
+    });
+
+    if (error) {
+      message.textContent = 'Қате: ' + error.message;
+      return;
+    }
+
+    message.textContent = data || 'Сұраныс орындалды.';
+    loadClassroom();
+  }
+
+  async function loadClassroom() {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+
+    if (!user) {
+      document.getElementById('classroomWelcome').textContent =
+        'Кабинетті ашу үшін аккаунтқа кіріңіз.';
+      document.getElementById('teacherPanel').style.display = 'none';
+      document.getElementById('studentPanel').style.display = 'none';
+      return;
+    }
+
+    const { data: profile, error } = await supabaseClient
+      .from('profiles')
+      .select('full_name, role')
+      .eq('id', user.id)
+      .single();
+
+    if (error || !profile) {
+      document.getElementById('classroomWelcome').textContent =
+        'Профильді жүктеу қатесі: ' + (error?.message || 'Профиль табылмады');
+      return;
+    }
+
+    document.getElementById('classroomWelcome').textContent =
+      'Қош келдіңіз, ' + (profile.full_name || user.email);
+
+    document.getElementById('teacherPanel').style.display =
+      profile.role === 'teacher' ? 'block' : 'none';
+
+    document.getElementById('studentPanel').style.display =
+      profile.role === 'student' ? 'block' : 'none';
+
+    if (profile.role === 'teacher') {
+      await loadTeacherClasses(user.id);
+    } else if (profile.role === 'student') {
+      await loadStudentClasses(user.id);
+    } else {
+      document.getElementById('classroomWelcome').textContent =
+        'Аккаунт рөлі анықталмады. Мұғалімге немесе әкімшіге хабарласыңыз.';
+    }
+  }
+
+  async function loadTeacherClasses(userId) {
+    const box = document.getElementById('teacherClasses');
+
+    const { data, error } = await supabaseClient
+      .from('classes')
+      .select('id, class_name, join_code')
+      .eq('teacher_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      box.textContent = 'Сыныптарды жүктеу қатесі: ' + error.message;
+      return;
+    }
+
+    box.innerHTML = data.length ? data.map(c => `
+      <article class="card">
+        <h3>${escapeText(c.class_name)}</h3>
+        <p>Сынып коды: <b>${escapeText(c.join_code || 'Код жоқ')}</b></p>
+        <button class="btn" style="background:#edf3f8;color:#17243b"
+          onclick="navigator.clipboard && navigator.clipboard.writeText('${escapeText(c.join_code || '')}')">
+          Кодты көшіру
+        </button>
+      </article>
+    `).join('') : '<div class="empty-note">Сіз әлі сынып құрмадыңыз.</div>';
+  }
+
+  async function loadStudentClasses(userId) {
+    const box = document.getElementById('studentClasses');
+
+    const { data, error } = await supabaseClient
+      .from('class_students')
+      .select('status, classes(class_name, join_code)')
+      .eq('student_id', userId);
+
+    if (error) {
+      box.textContent = 'Сыныптарды жүктеу қатесі: ' + error.message;
+      return;
+    }
+
+    box.innerHTML = data.length ? data.map(row => `
+      <article class="card">
+        <h3>${escapeText(row.classes?.class_name || 'Сынып')}</h3>
+        <p>Күйі: ${row.status === 'approved' ? 'Қабылданды' : 'Мақұлдауды күтуде'}</p>
+      </article>
+    `).join('') : '<div class="empty-note">Сіз әзірге сыныпқа қосылмадыңыз.</div>';
+  }
+
+  function escapeText(value) {
+    return String(value ?? '').replace(/[&<>"']/g, ch => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[ch]);
+  }
+
+  window.loadClassroom = loadClassroom;
+  window.addEventListener('load', loadClassroom);
+  supabaseClient.auth.onAuthStateChange(() => {
+    setTimeout(loadClassroom, 0);
+  });
+})();
+</script>
 </body>
 </html>
