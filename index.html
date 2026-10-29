@@ -351,32 +351,46 @@ function answerQuiz(i) {
   document.getElementById('nextQuestion').disabled = false;
 }
 
+
 document.getElementById('nextQuestion').onclick = async function () {
   if (qi < quiz.length - 1) {
     qi++;
     renderQuiz();
-  } else {
-    await saveQuizResult();
+    return;
+  }
 
-    document.getElementById('quizPanel').innerHTML = `
-      <div style="text-align:center;padding:28px 10px">
-        <div style="font-size:44px">${score >= 4 ? '🎉' : '🧪'}</div>
-        <h2>Жаттығу аяқталды!</h2>
-        <div style="font-size:38px;font-weight:900;color:#087e9b">
-          ${score} / ${quiz.length}
-        </div>
-        <p class="muted">
-          ${score >= 4
-            ? 'Жарайсың! Біліміңді әрі қарай бекіт.'
-            : 'Қателерді қарап, қайта жаттығып көр.'}
-        </p>
-        <button class="btn primary" id="again">Қайта тапсыру</button>
+  document.getElementById('quizPanel').innerHTML = `
+    <div style="text-align:center;padding:28px 10px">
+      <div style="font-size:44px">${score >= 4 ? '🎉' : '🧪'}</div>
+      <h2>Жаттығу аяқталды!</h2>
+      <div style="font-size:38px;font-weight:900;color:#087e9b">
+        ${score} / ${quiz.length}
       </div>
-    `;
+      <p class="muted">
+        ${score >= 4
+          ? 'Жарайсың! Біліміңді әрі қарай бекіт.'
+          : 'Қателерді қарап, қайта жаттығып көр.'}
+      </p>
+      <p>Дұрыс жауап саны: ${score}</p>
+      <p>Қате жауап саны: ${quiz.length - score}</p>
+      <button class="btn primary" id="again">Қайта тапсыру</button>
+      <p id="saveStatus" class="muted">Нәтиже сақталып жатыр...</p>
+    </div>
+  `;
 
-    document.getElementById('again').onclick = restartQuiz;
+  document.getElementById('again').onclick = restartQuiz;
+
+  try {
+    await saveQuizResult();
+    const status = document.getElementById('saveStatus');
+    if (status) status.textContent = 'Нәтижені сақтау әрекеті аяқталды.';
+  } catch (error) {
+    const status = document.getElementById('saveStatus');
+    if (status) status.textContent = 'Нәтиже сақталмады.';
+    console.error(error);
   }
 };
+
 
 function restartQuiz() {
   qi = 0;
