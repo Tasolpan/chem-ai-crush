@@ -138,7 +138,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
 </script>
 <div class="app">
-<header class="topbar"><div class="brand"><div class="brandmark">✦</div><div>Chem AI crush<small>АТОМНАН МОЛЕКУЛАҒА • ТЕОРИЯДАН ПРАКТИКАҒА</small></div></div><nav class="nav" id="nav"><button class="active" data-page="home">Басты бет</button><button data-page="theory">Теория</button><button data-page="practice">Практика</button><button data-page="unt">ҰБТ сынақ тесті</button><button data-page="periodic">Периодтық кесте</button><button data-page="tools">Құралдар</button></nav><div style="display:flex;gap:9px;align-items:center"><button class="lang" id="langBtn" aria-label="Тіл ауыстыру">ҚАЗ ▾</button><button class="lang" id="accountBtn">Кіру</button><button class="menu-btn" id="menuBtn">☰</button></div></header>
+<header class="topbar"><div class="brand"><div class="brandmark">✦</div><div>Chem AI crush<small>АТОМНАН МОЛЕКУЛАҒА • ТЕОРИЯДАН ПРАКТИКАҒА</small></div></div><nav class="nav" id="nav"><button class="active" data-page="home">Басты бет</button><button data-page="theory">Теория</button><button data-page="practice">Практика</button><button data-page="unt">ҰБТ сынақ тесті</button><button data-page="periodic">Периодтық кесте</button><button data-page="tools">Құралдар</button><button data-page="lab">Виртуалды зертхана</button></nav><div style="display:flex;gap:9px;align-items:center"><button class="lang" id="langBtn" aria-label="Тіл ауыстыру">ҚАЗ ▾</button><button class="lang" id="accountBtn">Кіру</button><button class="menu-btn" id="menuBtn">☰</button></div></header>
 <main class="main">
 <section class="page active" id="page-home">
 <div class="hero"><div><div class="eyebrow"><span class="dot"></span> ҚАЗАҚША ҚОЛДАНБАЛЫ ҰБТ ПЛАТФОРМАСЫ</div><h1>Атомнан молекулаға.<br><span class="gradient">Теориядан практикаға.</span></h1><p>Химияны жаттап қана қоймай, түсініп үйрен. Қысқа теория, есептердің қадамдық шешімі және ҰБТ форматына жақын жаттығулар — бір жерде.</p><div class="actions"><button class="btn primary" data-goto="theory">Оқуды бастау ↗</button><button class="btn secondary" data-goto="practice">Тест тапсыру →</button></div></div><div class="hero-art"><div class="orbit"><div class="nucleus">⚛</div><i class="electron e1"></i><i class="electron e2"></i><i class="electron e3"></i></div><div class="float-tag tag1">H₂O · Су молекуласы</div><div class="float-tag tag2">p⁺ &nbsp; n⁰ &nbsp; e⁻</div></div></div>
@@ -176,6 +176,17 @@
 </div><p class="muted" style="font-size:12px;margin-top:12px">Түстер: көк — металдар, жасыл — бейметалдар, күлгін — жартылай металдар. Кестеде 118 химиялық элемент берілген. Элементті басып, атомдық массасы мен электрондық конфигурациясын қара.</p></section>
 <section class="page" id="page-tools"><div class="page-title"><h1>Химия құралдары</h1><p>Қарапайым есептеулерге арналған оқу құралдары.</p></div><div class="calc-grid"><div class="panel"><h3 style="margin-top:0">Молярлық масса калькуляторы</h3><p class="muted" style="font-size:13px">Формуланы енгіз: H2O, CO2, NaCl, H2SO4.</p><input class="calc-input" id="formulaInput" style="width:100%" value="H2O" placeholder="Мысалы: H2O"><button class="btn primary" id="calcMass" style="margin-top:12px">Есептеу</button><div class="calc-result" id="massResult">18.02 г/моль</div><p class="muted" id="massExplain" style="font-size:12px">H₂O құрамындағы атомдардың салыстырмалы массалары қосылады.</p></div><div class="panel"><h3 style="margin-top:0">Жылдам калькулятор</h3><input class="calc-input" id="calcExpr" style="width:100%" value="2 * (18 + 16)" placeholder="Мысалы: 2*(18+16)"><button class="btn primary" id="calcBasic" style="margin-top:12px">Есептеу</button><div class="calc-result" id="basicResult">68</div><p class="muted" style="font-size:12px">Қосу, азайту, көбейту, бөлу және жақшаларды қолдайды.</p></div></div><div class="section-head"><div><h2>Ерігіштік кестесі</h2><p>Ерігіштік ережелеріне арналған бөлім.</p></div></div><div class="card"><h3 style="margin-top:0">Есте сақта</h3><p class="muted" style="line-height:1.7;font-size:14px">Көптеген нитраттар (NO₃⁻) суда ериді. Сілтілік металдардың тұздары көбіне еритін болады. Ерекше жағдайларды нақты ерігіштік кестесімен тексер.</p><div class="empty-note">Толық интерактивті ерігіштік кестесі келесі нұсқада қосылады.</div></div></section>
 <div class="footer"><span>© 2026 Chem AI crush · Атомнан молекулаға</span><span>Оқу мақсатында жасалған бастапқы демо-нұсқа</span></div>
+<section class="page" id="page-lab">
+<div class="page-title"><h1>⚗ Виртуалды химия зертханасы</h1><p>Құрал-жабдықты таңдап, реагенттерді қосып, тәжірибені виртуалды түрде орында.</p></div>
+<div class="panel" style="padding:10px">
+<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+<div><b>Chem AI crush — Virtual Lab</b><p class="muted" style="margin:5px 0 0;font-size:12px">Офлайн HTML-модуль</p></div>
+<a class="btn primary" href="./chem_ai_crush_virtual_lab_OFFLINE.html" target="_blank" rel="noopener" style="text-decoration:none;display:inline-block">Зертхананы жеке ашу ↗</a>
+</div>
+<iframe src="./chem_ai_crush_virtual_lab_OFFLINE.html" title="Chem AI crush виртуалды химия зертханасы" loading="lazy" style="display:block;width:100%;height:780px;border:1px solid #dce6f0;border-radius:12px;background:#071225"></iframe>
+<p class="muted" style="font-size:12px;margin:10px 2px 2px">Сайтқа жариялау кезінде осы HTML модулін index.html файлының қасына бірге жүктеңіз.</p>
+</div>
+</section>
 <footer class="footer"><span><strong>Chem AI crush</strong> — Атомнан молекулаға. Теориядан практикаға.</span><span>Химиядан қолданбалы ҰБТ платформасының демо-нұсқасы</span></footer></main></div>
 <div class="modal-backdrop" id="loginModal">
   <div class="modal">
@@ -917,19 +928,16 @@ document.getElementById('forgotPasswordBtn').onclick = async () => {
 
     document.getElementById('studentPanel').style.display =
       profile.role === 'student' ? 'block' : 'none';
-   
-
-if (profile.role === 'teacher') {
-  await loadTeacherClasses(user.id);
-  await loadTeacherResults(user.id);
-} else if (profile.role === 'student') {
-  await loadStudentClasses(user.id);
-  await loadStudentResults(user.id);
-} else {
-  document.getElementById('classroomWelcome').textContent =
-    'Аккаунт рөлі анықталмады. Мұғалімге немесе әкімшіге хабарласыңыз.';
-}
-}
+    if (profile.role === 'teacher') {
+      await loadTeacherClasses(user.id);
+    } else if (profile.role === 'student') {
+      await loadStudentClasses(user.id);
+      await loadStudentResults(user.id);
+    } else {
+      document.getElementById('classroomWelcome').textContent =
+        'Аккаунт рөлі анықталмады. Мұғалімге немесе әкімшіге хабарласыңыз.';
+    }
+} 
   async function loadTeacherClasses(userId) {
     const box = document.getElementById('teacherClasses');
 
@@ -976,109 +984,6 @@ if (profile.role === 'teacher') {
       </article>
     `).join('') : '<div class="empty-note">Сіз әзірге сыныпқа қосылмадыңыз.</div>';
   }
-  
-async function loadTeacherResults(userId) {
-  const box = document.getElementById('classResults');
-
-  if (!box) return;
-
-  box.innerHTML =
-    '<p class="muted">Оқушылардың нәтижелері жүктелуде...</p>';
-
-  const { data: classes, error: classError } = await supabaseClient
-    .from('classes')
-    .select('id, class_name')
-    .eq('teacher_id', userId);
-
-  if (classError) {
-    box.textContent = 'Сыныптарды жүктеу қатесі: ' + classError.message;
-    return;
-  }
-
-  if (!classes || classes.length === 0) {
-    box.innerHTML =
-      '<div class="empty-note">Сізде әзірге сынып жоқ.</div>';
-    return;
-  }
-
-  const classIds = classes.map(c => c.id);
-  const classNames = Object.fromEntries(
-    classes.map(c => [c.id, c.class_name])
-  );
-
-  const { data: students, error: studentError } = await supabaseClient
-    .from('class_students')
-    .select('class_id, student_id, status')
-    .in('class_id', classIds)
-    .eq('status', 'approved');
-
-  if (studentError) {
-    box.textContent =
-      'Оқушыларды жүктеу қатесі: ' + studentError.message;
-    return;
-  }
-
-  if (!students || students.length === 0) {
-    box.innerHTML =
-      '<div class="empty-note">Сыныпта мақұлданған оқушылар жоқ.</div>';
-    return;
-  }
-
-  const studentIds = [...new Set(students.map(s => s.student_id))];
-
-  const { data: profiles, error: profileError } = await supabaseClient
-    .from('profiles')
-    .select('id, full_name')
-    .in('id', studentIds);
-
-  if (profileError) {
-    box.textContent =
-      'Оқушы профильдерін жүктеу қатесі: ' + profileError.message;
-    return;
-  }
-
-  const names = Object.fromEntries(
-    (profiles || []).map(p => [p.id, p.full_name || 'Оқушы'])
-  );
-
-  const { data: attempts, error: attemptsError } = await supabaseClient
-    .from('test_attempts')
-    .select('student_id, test_title, correct_answers, total_questions, completed_at')
-    .in('student_id', studentIds)
-    .order('completed_at', { ascending: false });
-
-  if (attemptsError) {
-    box.textContent =
-      'Тест нәтижелерін жүктеу қатесі: ' + attemptsError.message;
-    return;
-  }
-
-  const rows = (attempts || []).map(a => {
-    const student = students.find(s => s.student_id === a.student_id);
-    const percent = a.total_questions
-      ? Math.round(a.correct_answers / a.total_questions * 100)
-      : 0;
-    const date = a.completed_at
-      ? new Date(a.completed_at).toLocaleString('kk-KZ')
-      : 'Күні көрсетілмеген';
-
-    return `
-      <article class="card">
-        <h3>${escapeText(names[a.student_id] || 'Оқушы')}</h3>
-        <p>Сынып: <b>${escapeText(classNames[student.class_id] || '')}</b></p>
-        <p>Тест: <b>${escapeText(a.test_title || 'Сынама ҰБТ')}</b></p>
-        <p>Дұрыс жауап: <b>${a.correct_answers} / ${a.total_questions}</b></p>
-        <p>Нәтиже: <b>${percent}%</b></p>
-        <p class="muted">${escapeText(date)}</p>
-      </article>
-    `;
-  });
-
-  box.innerHTML = rows.length
-    ? rows.join('')
-    : '<div class="empty-note">Оқушылар әлі тест тапсырмаған.</div>';
-}
-
 async function loadStudentResults(userId) {
   const box = document.getElementById('studentResults');
 

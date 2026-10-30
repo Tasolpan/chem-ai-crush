@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Chem AI crush — Виртуалды химия зертханасы</title>
+<style>
+:root{--bg:#071225;--panel:#101e38;--line:#4e75a8;--cyan:#6ce8ff;--gold:#ffd071;--text:#edf5ff;--muted:#a9bbd5}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 30% 0,#19335b,#071225 55%);color:var(--text);font:14px system-ui,Arial,sans-serif}
+header{padding:14px 16px;border-bottom:1px solid #35527d;background:#0b1730;position:sticky;top:0;z-index:5}
+h1{font-size:18px;margin:0 0 4px;color:#fff}header p{margin:0;color:#a9c8e8;font-size:12px}
+main{max-width:1200px;margin:auto;padding:10px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.9fr);gap:10px}
+.panel{background:linear-gradient(160deg,#122440,#0a142a);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 8px 25px #0003}
+.panel h2{font-size:15px;color:var(--cyan);margin:0;padding:12px 13px 7px}
+#stageWrap{position:relative;min-height:440px;height:min(68vh,680px);background:linear-gradient(#101f3b,#081329);overflow:hidden}
+canvas{display:block;width:100%;height:100%;touch-action:pan-y}
+.overlay{position:absolute;top:9px;left:10px;right:10px;display:flex;justify-content:space-between;gap:6px;pointer-events:none}
+.pill{background:#071225d9;border:1px solid #526e9c;border-radius:8px;padding:6px 9px;font-size:11px;color:#d9eaff}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;padding:10px;border-top:1px solid #263d62}
+button,select,input{font:inherit}
+button{border:1px solid #6485b5;background:#20375d;color:white;border-radius:8px;padding:9px 11px;cursor:pointer}
+button:hover{filter:brightness(1.15)}button:disabled{opacity:.4;cursor:not-allowed}
+.primary{background:linear-gradient(#ffd989,#f7ad4c);color:#2c1b05;border-color:#ffe4a8;font-weight:750}
+.active{background:#126b6f;border-color:#5ce9df}
+.controls{padding:0 12px 12px}
+label{display:block;color:#b9cbe2;font-size:12px;margin:8px 0 4px}
+select,input[type=number]{width:100%;padding:9px;background:#071329;color:#edf5ff;border:1px solid #40577e;border-radius:8px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.chemGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:6px}
+.chem{padding:9px;text-align:left;min-height:57px;display:flex;align-items:center;gap:8px;background:#0a1730}
+.chem .drop{width:18px;height:24px;border-radius:50% 50% 55% 55%;transform:rotate(0deg);border:1px solid #ffffff80;flex-shrink:0}
+.chem b{display:block;font-size:12px}.chem small{display:block;color:#b6c9e3;font-size:10px;margin-top:2px}
+.chem.selected{outline:2px solid var(--gold);background:#283d5e}
+.status{padding:10px;border:1px solid #354e75;border-radius:8px;background:#071329;margin-top:10px;line-height:1.45}
+.status strong{color:var(--gold)}.log{max-height:170px;overflow:auto;font-size:12px;color:#c8d8ed;line-height:1.5}
+.log div{padding:5px 0;border-bottom:1px solid #263a59}
+.small{font-size:11px;color:var(--muted);line-height:1.4}
+#burnerBtn.on{background:#8a3c24;border-color:#ffad75}
+footer{text-align:center;color:#7f95b7;font-size:11px;padding:12px}
+@media(max-width:760px){main{grid-template-columns:1fr;padding:7px}.panel h2{padding-top:10px}#stageWrap{height:430px;min-height:380px}.chemGrid{grid-template-columns:1fr 1fr}header{position:relative}h1{font-size:16px}}
+</style>
+</head>
+<body>
+<header><h1>⚗ Chem AI crush — Виртуалды химия зертханасы</h1><p>Ыдысты таңдаңыз · реагент қосыңыз · қыздырыңыз · реакцияны бақылаңыз</p></header>
+<main>
+<section class="panel">
+<h2>Зертхана үстелі</h2>
+<div id="stageWrap"><canvas id="lab"></canvas><div class="overlay"><span class="pill" id="vesselTag">Ыдыс: стақан</span><span class="pill" id="heatTag">Қыздыру: өшірулі</span></div></div>
+<div class="toolbar">
+<button id="burnerBtn" onclick="toggleBurner()">🔥 Спиртшамды жағу</button>
+<button class="primary" onclick="runReaction()">▶ Реакцияны жүргізу</button>
+<button onclick="resetLab()">↻ Тазалау / қайта бастау</button>
+</div>
+<div class="controls"><div class="small">Көріністегі заттар — оқу мақсатындағы визуалды модель. Құралды және реагенттерді төмендегі панельден таңдаңыз.</div></div>
+</section>
+<section class="panel">
+<h2>1. Құрал-жабдықты таңдаңыз</h2>
+<div class="controls">
+<label>Реакциялық ыдыс</label>
+<select id="vessel" onchange="changeVessel()">
+<option value="beaker">Химиялық стақан</option><option value="testtube">Сынауық</option><option value="flask">Колба</option><option value="evaporating">Буландыру табақшасы</option><option value="cylinder">Өлшеуіш цилиндр</option>
+</select>
+<label>Реагенттер (қосу үшін басыңыз)</label>
+<div class="chemGrid" id="chemGrid"></div>
+<div class="row"><div><label>Қосылатын мөлшер</label><select id="amount"><option value="1">1 тамшы / үлес</option><option value="2">2 үлес</option><option value="3">3 үлес</option></select></div><div><label>Температура режимі</label><select id="temp"><option value="room">Бөлме температурасы</option><option value="warm">Жылыту</option><option value="hot">Қатты қыздыру</option></select></div></div>
+<div class="status" id="status"><strong>Жұмысқа дайын.</strong><br>Алдымен ыдысты таңдап, реагенттерді қосыңыз.</div>
+<h2 style="padding-left:0;margin-top:12px">2. Бақылау журналы</h2><div id="log" class="log"><div>Зертхана іске қосылды. Реакция басталғанда бақылаулар осында жазылады.</div></div>
+</div>
+</section>
+<section class="panel" style="grid-column:1/-1">
+<h2>Қолдау көрсетілетін оқу тәжірибелері</h2>
+<div class="controls small">AgNO₃ + NaCl → AgCl↓ (ақ тұнба) · CuSO₄ + NaOH → Cu(OH)₂↓ (көк тұнба) · FeCl₃ + NaOH → Fe(OH)₃↓ (қоңыр тұнба) · Zn + HCl → H₂↑ · Mg + HCl → H₂↑ · Na₂CO₃ + HCl → CO₂↑ · HCl + NaOH → бейтараптану · Fe + CuSO₄ → мыс бөлінуі · H₂O₂ → O₂↑ (катализатор моделі) · Cu(OH)₂ қыздырғанда → CuO + H₂O.</div>
+</section>
+</main>
+<footer>Chem AI crush · Браузерде жұмыс істейтін дербес оқу моделі · Нақты зертханадағы қауіпсіздік ережелерін алмастырмайды</footer>
+<script>
+const canvas=document.getElementById('lab'),ctx=canvas.getContext('2d');
+let W=700,H=650,dpr=1, burner=false, heat=20, selected=[], particles=[], reactionTimer=0, precipitate=0, gas=false, flame=0, sceneTick=0;
+let vessel='beaker', liquid='#287ca4', liquidLevel=.53, solidColor=null, deposit=false, smoke=false, bubbles=[], droplets=[];
+const chemicals=[
+{id:'AgNO3',name:'Күміс нитраты',formula:'AgNO₃',color:'#dce8f0'},
+{id:'NaCl',name:'Натрий хлориді',formula:'NaCl',color:'#f4f4ed'},
+{id:'CuSO4',name:'Мыс(II) сульфаты',formula:'CuSO₄',color:'#168ee5'},
+{id:'NaOH',name:'Натрий гидроксиді',formula:'NaOH',color:'#e7f4ff'},
+{id:'FeCl3',name:'Темір(III) хлориді',formula:'FeCl₃',color:'#c89b40'},
+{id:'HCl',name:'Тұз қышқылы',formula:'HCl',color:'#b8d9ed'},
+{id:'Zn',name:'Мырыш',formula:'Zn',color:'#b9c4d0'},
+{id:'Mg',name:'Магний',formula:'Mg',color:'#d7e2e9'},
+{id:'Na2CO3',name:'Натрий карбонаты',formula:'Na₂CO₃',color:'#e8edf5'},
+{id:'Fe',name:'Темір',formula:'Fe',color:'#7d8d9d'},
+{id:'H2O2',name:'Сутек пероксиді',formula:'H₂O₂',color:'#b8dff4'},
+{id:'CuOH2',name:'Мыс(II) гидроксиді',formula:'Cu(OH)₂',color:'#168fe2'}
+];
+function resize(){const r=canvas.getBoundingClientRect();dpr=Math.min(window.devicePixelRatio||1,2);W=Math.max(320,r.width);H=Math.max(380,r.height);canvas.width=W*dpr;canvas.height=H*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);draw();}
+window.addEventListener('resize',resize);
+function rounded(x,y,w,h,r){ctx.beginPath();ctx.roundRect(x,y,w,h,r);}
+function draw(){
+ ctx.clearRect(0,0,W,H);let g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,'#102344');g.addColorStop(1,'#071225');ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ // bench
+ ctx.strokeStyle='#243b5d';ctx.lineWidth=1;for(let y=H*.82;y<H;y+=18){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+ const cx=W*.5, top=H*.24, bottom=H*.75, ww=Math.min(W*.42,190);
+ // support stand and clamp
+ ctx.strokeStyle='#a8c3df';ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(cx+ww*.43,top-22);ctx.lineTo(cx+ww*.43,bottom+10);ctx.moveTo(cx+ww*.43,top+12);ctx.lineTo(cx+ww*.13,top+12);ctx.stroke();
+ // burner body
+ const by=H*.75+16;ctx.fillStyle='#8a9bb0';ctx.strokeStyle='#c4d3e3';ctx.lineWidth=1.5;
+ ctx.beginPath();ctx.moveTo(cx-34,by+30);ctx.lineTo(cx-24,by-4);ctx.lineTo(cx+24,by-4);ctx.lineTo(cx+34,by+30);ctx.closePath();ctx.fill();ctx.stroke();
+ ctx.fillStyle='#263c59';ctx.fillRect(cx-39,by+28,78,9);
+ if(burner){flame+=.16;let fy=by-7;ctx.save();ctx.translate(cx,fy);ctx.globalAlpha=.9;ctx.fillStyle='#ff6a25';ctx.beginPath();ctx.moveTo(-20,0);ctx.quadraticCurveTo(-27,-25,-7,-42);ctx.quadraticCurveTo(-7,-25,0,-18);ctx.quadraticCurveTo(10,-49,18,-26);ctx.quadraticCurveTo(26,-8,20,0);ctx.closePath();ctx.fill();ctx.fillStyle='#ffd85b';ctx.beginPath();ctx.moveTo(-9,0);ctx.quadraticCurveTo(-13,-18,1,-29);ctx.quadraticCurveTo(3,-12,10,0);ctx.closePath();ctx.fill();ctx.restore();}
+ // vessel geometry
+ ctx.save();ctx.lineWidth=3;ctx.strokeStyle='#d5e9ff';ctx.fillStyle='#b9e9ff14';
+ if(vessel==='testtube'){
+   const x=cx-ww*.23, x2=cx+ww*.23, y=top-12, b=bottom;
+   ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,b-25);ctx.quadraticCurveTo(x,b+20,cx,b+20);ctx.quadraticCurveTo(x2,b+20,x2,b-25);ctx.lineTo(x2,y);ctx.stroke();
+   drawLiquidTube(cx,top,bottom,ww*.23);
+ }else if(vessel==='flask'){
+   ctx.beginPath();ctx.moveTo(cx-ww*.13,top-28);ctx.lineTo(cx-ww*.13,top+25);ctx.lineTo(cx-ww*.48,bottom-80);ctx.quadraticCurveTo(cx-ww*.55,bottom-60,cx-ww*.5,bottom-40);ctx.lineTo(cx-ww*.42,bottom);ctx.quadraticCurveTo(cx,bottom+17,cx+ww*.42,bottom);ctx.lineTo(cx+ww*.5,bottom-40);ctx.quadraticCurveTo(cx+ww*.55,bottom-60,cx+ww*.48,bottom-80);ctx.lineTo(cx+ww*.13,top+25);ctx.lineTo(cx+ww*.13,top-28);ctx.stroke();
+   ctx.fillStyle=liquid;ctx.globalAlpha=.72;ctx.beginPath();ctx.moveTo(cx-ww*.43,bottom-28);ctx.quadraticCurveTo(cx,bottom-13,cx+ww*.43,bottom-28);ctx.lineTo(cx+ww*.45,bottom-55);ctx.lineTo(cx+ww*.27,top+58);ctx.lineTo(cx-ww*.27,top+58);ctx.lineTo(cx-ww*.45,bottom-55);ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+ }else if(vessel==='evaporating'){
+   ctx.beginPath();ctx.moveTo(cx-ww*.54,top+35);ctx.quadraticCurveTo(cx-ww*.5,bottom-10,cx,bottom);ctx.quadraticCurveTo(cx+ww*.5,bottom-10,cx+ww*.54,top+35);ctx.stroke();
+   ctx.fillStyle=liquid;ctx.globalAlpha=.8;ctx.beginPath();ctx.ellipse(cx,H*.62,ww*.48,18,0,0,Math.PI);ctx.fill();ctx.globalAlpha=1;
+ }else if(vessel==='cylinder'){
+   const x=cx-ww*.31,x2=cx+ww*.31;ctx.beginPath();ctx.moveTo(x,top-8);ctx.lineTo(x,bottom);ctx.quadraticCurveTo(cx,bottom+14,x2,bottom);ctx.lineTo(x2,top-8);ctx.stroke();
+   drawLiquidTube(cx,top,bottom,ww*.31);
+ }else{
+   const x=cx-ww*.43,x2=cx+ww*.43;ctx.beginPath();ctx.moveTo(x,top);ctx.lineTo(x+10,bottom-5);ctx.quadraticCurveTo(cx,bottom+15,x2-10,bottom-5);ctx.lineTo(x2,top);ctx.stroke();
+   ctx.beginPath();ctx.ellipse(cx,top,ww*.43,10,0,0,Math.PI*2);ctx.stroke();
+   ctx.fillStyle=liquid;ctx.globalAlpha=.74;ctx.beginPath();ctx.moveTo(x+9,top+(bottom-top)*liquidLevel);ctx.quadraticCurveTo(cx,top+(bottom-top)*liquidLevel+9,x2-9,top+(bottom-top)*liquidLevel);ctx.lineTo(x2-10,bottom-7);ctx.quadraticCurveTo(cx,bottom+7,x+10,bottom-7);ctx.closePath();ctx.fill();ctx.globalAlpha=1;
+   ctx.strokeStyle='#bde6ff88';ctx.lineWidth=2;ctx.beginPath();ctx.ellipse(cx,top+(bottom-top)*liquidLevel,ww*.41,7,0,0,Math.PI);ctx.stroke();
+ }
+ // precipitate settled at bottom
+ if(precipitate>0){ctx.fillStyle=solidColor||'#f3f5f4';ctx.globalAlpha=.94;ctx.beginPath();ctx.ellipse(cx,H*.735,ww*.35,Math.min(precipitate,17),0,0,Math.PI*2);ctx.fill();ctx.globalAlpha=1;}
+ if(deposit){ctx.strokeStyle='#c47a43';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(cx-ww*.27,H*.70);ctx.quadraticCurveTo(cx,H*.73,cx+ww*.25,H*.70);ctx.stroke();}
+ // bubbles only if reaction actually makes gas
+ if(gas){if(Math.random()<.32)bubbles.push({x:cx+(Math.random()-.5)*ww*.5,y:H*.68,r:2+Math.random()*3,v:1+Math.random()*1.5});}
+ bubbles=bubbles.filter(b=>b.y>top+20);bubbles.forEach(b=>{b.y-=b.v;b.x+=Math.sin(sceneTick+b.y*.04)*.35;ctx.strokeStyle='#b9efffbd';ctx.lineWidth=1.4;ctx.beginPath();ctx.arc(b.x,b.y,b.r,0,Math.PI*2);ctx.stroke();});
+ if(smoke){ctx.fillStyle='#d5dce6';ctx.globalAlpha=.22;for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(cx+(Math.random()-.5)*45,top-18-Math.random()*40,5+Math.random()*9,0,Math.PI*2);ctx.fill();}ctx.globalAlpha=1;}
+ ctx.restore();
+ // reagent bottles on bench sides
+ drawBottle(W*.13,H*.57,'Реагент','#58bce9');drawBottle(W*.87,H*.57,'Ерітінді','#d6b7ff');
+ ctx.fillStyle='#c9d8ed';ctx.font='12px system-ui';ctx.textAlign='center';ctx.fillText(vesselLabel(),cx,H*.13);
+ ctx.fillStyle='#9eb4d3';ctx.font='11px system-ui';ctx.fillText(burner?'Қыздыру жүріп жатыр':'Виртуалды зертхана үстелі',cx,H*.91);
+ sceneTick++;
+}
+function drawLiquidTube(cx,top,bottom,half){ctx.fillStyle=liquid;ctx.globalAlpha=.78;ctx.beginPath();ctx.moveTo(cx-half+5,top+(bottom-top)*liquidLevel);ctx.lineTo(cx-half+5,bottom-25);ctx.quadraticCurveTo(cx,bottom+12,cx+half-5,bottom-25);ctx.lineTo(cx+half-5,top+(bottom-top)*liquidLevel);ctx.closePath();ctx.fill();ctx.globalAlpha=1;}
+function drawBottle(x,y,label,col){ctx.save();ctx.translate(x,y);ctx.fillStyle='#c6e8ff22';ctx.strokeStyle='#9ebbd8';ctx.lineWidth=1.5;ctx.fillRect(-10,-30,20,34);ctx.strokeRect(-10,-30,20,34);ctx.fillRect(-5,-40,10,10);ctx.strokeRect(-5,-40,10,10);ctx.fillStyle=col;ctx.globalAlpha=.65;ctx.fillRect(-8,-8,16,10);ctx.globalAlpha=1;ctx.fillStyle='#dceaff';ctx.font='9px system-ui';ctx.textAlign='center';ctx.fillText(label,0,17);ctx.restore();}
+function vesselLabel(){return ({beaker:'Химиялық стақан',testtube:'Сынауық',flask:'Колба',evaporating:'Буландыру табақшасы',cylinder:'Өлшеуіш цилиндр'})[vessel];}
+function changeVessel(){vessel=document.getElementById('vessel').value;document.getElementById('vesselTag').textContent='Ыдыс: '+vesselLabel().toLowerCase();draw();}
+function buildChemicals(){const grid=document.getElementById('chemGrid');grid.innerHTML='';chemicals.forEach(c=>{let b=document.createElement('button');b.className='chem';b.innerHTML=`<span class="drop" style="background:${c.color}"></span><span><b>${c.formula}</b><small>${c.name}</small></span>`;b.onclick=()=>addChem(c,b);grid.appendChild(b);});}
+function addChem(c,button){selected.push(c.id);button.classList.add('selected');liquid=c.color;liquidLevel=Math.max(.37,liquidLevel-.025);document.getElementById('status').innerHTML=`<strong>${c.formula} қосылды.</strong><br>Ыдыстағы реагенттер: ${selected.map(id=>chemicals.find(x=>x.id===id).formula).join(' + ')}.`;addLog(`${c.name} (${c.formula}) ыдысқа қосылды.`);draw();}
+function toggleBurner(){burner=!burner;document.getElementById('burnerBtn').classList.toggle('on',burner);document.getElementById('burnerBtn').textContent=burner?'🔥 Спиртшамды сөндіру':'🔥 Спиртшамды жағу';document.getElementById('heatTag').textContent='Қыздыру: '+(burner?'қосулы':'өшірулі');if(burner){heat=120;addLog('Спиртшам жағылды. Ыдыс қыздырылады.');}else{heat=20;addLog('Спиртшам сөндірілді.');}draw();}
+function addLog(t){let l=document.getElementById('log');let d=document.createElement('div');d.textContent=new Date().toLocaleTimeString('kk-KZ',{hour:'2-digit',minute:'2-digit'})+' — '+t;l.prepend(d);}
+function has(a,b){return selected.includes(a)&&selected.includes(b);}
+function runReaction(){
+ if(!selected.length){document.getElementById('status').innerHTML='<strong>Алдымен реагент қосыңыз.</strong><br>Реагенттер тізімінен бір немесе бірнеше затты таңдаңыз.';return;}
+ const s=new Set(selected);let title='',eq='',obs='',kind='',col=liquid,solid=null,gasNow=false,dep=false,heatReq=false;
+ if(has('AgNO3','NaCl')){title='Күміс хлоридінің тұнбаға түсуі';eq='AgNO₃ + NaCl → AgCl↓ + NaNO₃';obs='Ақ AgCl тұнбасы түзіліп, ыдыс түбіне шөгеді.';kind='Тұнба түзілу';solid='#f4f5f1';col='#c8d6df';}
+ else if(has('CuSO4','NaOH')){title='Мыс(II) гидроксидінің түзілуі';eq='CuSO₄ + 2NaOH → Cu(OH)₂↓ + Na₂SO₄';obs='Көк түсті Cu(OH)₂ тұнбасы түзіледі.';kind='Тұнба түзілу';solid='#168fe4';col='#3b91c9';}
+ else if(has('FeCl3','NaOH')){title='Темір(III) гидроксидінің түзілуі';eq='FeCl₃ + 3NaOH → Fe(OH)₃↓ + 3NaCl';obs='Қызыл-қоңыр Fe(OH)₃ тұнбасы түзіледі.';kind='Тұнба түзілу';solid='#9b512b';col='#b78c53';}
+ else if(has('Zn','HCl')){title='Мырыштың қышқылмен әрекеттесуі';eq='Zn + 2HCl → ZnCl₂ + H₂↑';obs='Сутек көпіршіктері бөлінеді; мырыш біртіндеп ериді.';kind='Газ бөліну';gasNow=true;col='#a7d4e7';}
+ else if(has('Mg','HCl')){title='Магнийдің қышқылмен әрекеттесуі';eq='Mg + 2HCl → MgCl₂ + H₂↑';obs='Сутек көпіршіктері бөлініп, магний ериді.';kind='Газ бөліну';gasNow=true;col='#c4d7e3';}
+ else if(has('Na2CO3','HCl')){title='Карбонаттың қышқылмен әрекеттесуі';eq='Na₂CO₃ + 2HCl → 2NaCl + H₂O + CO₂↑';obs='Көмірқышқыл газының көпіршіктері пайда болады.';kind='Газ бөліну';gasNow=true;col='#b5d9e8';}
+ else if(has('HCl','NaOH')){title='Бейтараптану реакциясы';eq='HCl + NaOH → NaCl + H₂O';obs='Тұз бен су түзіледі. Газ немесе тұнба түзілмейді.';kind='Бейтараптану';col='#c9dfe5';}
+ else if(has('Fe','CuSO4')){title='Темірдің мысты ығыстыруы';eq='Fe + CuSO₄ → FeSO₄ + Cu↓';obs='Темір бетінде қызғылт-қоңыр мыс бөлінеді; ерітінді түсі өзгереді.';kind='Орынбасу, тотығу-тотықсыздану';dep=true;col='#9b9f76';}
+ else if(s.has('H2O2')&&burner){title='Сутек пероксидінің ыдырауы (модель)';eq='2H₂O₂ → 2H₂O + O₂↑';obs='Қыздыру моделінде оттек көпіршіктері пайда болады.';kind='Ыдырау';gasNow=true;col='#b4e0ed';}
+ else if(s.has('CuOH2')&&burner){title='Мыс(II) гидроксидінің қыздырылуы';eq='Cu(OH)₂ → CuO + H₂O';obs='Көк тұнба қара түсті CuO-ға айналады.';kind='Термиялық ыдырау';solid='#252a32';col='#627e9b';}
+ else {title='Көрсетілген шартта реакция анықталмады';eq=selected.map(id=>chemicals.find(x=>x.id===id).formula).join(' + ');obs='Бұл комбинацияға арналған реакция моделі әзірге қосылмаған. Реагенттерді ауыстырыңыз немесе қыздыру қажет реакция үшін спиртшамды жағыңыз.';kind='Модель шектеуі';}
+ if(['warm','hot'].includes(document.getElementById('temp').value)&&!burner)obs+=' Температура режимі таңдалған, бірақ қыздыру үшін спиртшамды да жағу қажет.';
+ if(burner&&s.has('CuOH2')){solid='#252a32';}
+ liquid=col;solidColor=solid;precipitate=solid?3:0;gas=gasNow;deposit=dep;smoke=burner&&s.has('CuOH2');bubbles=[];
+ document.getElementById('status').innerHTML=`<strong>${title}</strong><br><b>${eq}</b><br>${obs}<br><span class="small">Түрі: ${kind}</span>`;
+ addLog(`${title}. ${obs}`);draw();
+ // Stop gas after a bounded animation window, not indefinitely.
+ if(gasNow){setTimeout(()=>{gas=false;draw();},8500);}
+}
+function resetLab(){selected=[];liquid='#287ca4';liquidLevel=.53;solidColor=null;precipitate=0;gas=false;deposit=false;smoke=false;bubbles=[];burner=false;document.getElementById('burnerBtn').classList.remove('on');document.getElementById('burnerBtn').textContent='🔥 Спиртшамды жағу';document.getElementById('heatTag').textContent='Қыздыру: өшірулі';document.querySelectorAll('.chem').forEach(x=>x.classList.remove('selected'));document.getElementById('status').innerHTML='<strong>Зертхана тазартылды.</strong><br>Жаңа тәжірибе бастауға болады.';addLog('Ыдыс тазартылды; жаңа тәжірибе бастауға дайын.');draw();}
+function animate(){if(burner||gas||smoke){draw();}requestAnimationFrame(animate);}
+buildChemicals();resize();animate();
+</script>
+</body></html>
