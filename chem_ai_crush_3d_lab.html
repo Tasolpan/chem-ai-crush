@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#09172f">
+<title>CHEM LAB 3D — Chem AI Crush</title>
+<style>
+:root{--navy:#0a1530;--ink:#eaf6ff;--sub:#a1b5d7;--line:#ffffff22;--cyan:#54e8f2;--mint:#9effc9;--purple:#a18bff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--ink);background:radial-gradient(ellipse at 16% 0%,#244c76 0,transparent 43%),linear-gradient(140deg,#080f25,#12244a 52%,#0b1a34);font:500 15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+button,select,input{font:inherit}button{cursor:pointer}.wrap{max-width:1330px;margin:auto;padding:16px}.head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px;flex-wrap:wrap}.logo{display:flex;align-items:center;gap:13px}.logo .ico{width:47px;height:47px;display:grid;place-items:center;font-size:27px;border-radius:17px;background:linear-gradient(135deg,#66eaf8,#68f3b5);color:#0b2344;box-shadow:0 10px 35px #32d5f25e}.logo h1{font-size:21px;margin:0;letter-spacing:.3px;line-height:1.15}.logo p{color:#b4c7e8;font-size:12px;margin:3px 0 0}.caps{display:flex;gap:7px;align-items:center}.tag{padding:7px 12px;border:1px solid #ffffff29;border-radius:30px;background:#ffffff0d;color:#cae6ff;font-size:12px}.outline{border:1px solid #7cc5ef5e;background:#ffffff12;color:#fff;border-radius:12px;padding:9px 14px}
+.hero{background:linear-gradient(135deg,#173867,#122246 61%,#2d235d);border:1px solid #ffffff27;border-radius:23px;box-shadow:0 20px 70px #0005;overflow:hidden}
+.hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 17px;border-bottom:1px solid #ffffff20;flex-wrap:wrap}.tabs{display:flex;gap:7px;flex-wrap:wrap}.tab{border:1px solid #ffffff24;border-radius:13px;padding:9px 15px;color:#d5eaf8;background:#ffffff12;font-weight:750}.tab.active{color:#072c46;background:linear-gradient(135deg,#66e9ff,#8effb9);border-color:transparent;box-shadow:0 6px 21px #42e6df4a}.score{font-size:13px;color:#c3dfff}.score b{color:#ffe99b;font-size:20px;margin-left:7px}
+.layout{display:grid;grid-template-columns:minmax(0,1.58fr) minmax(295px,1fr);gap:15px;padding:14px}.viewer{position:relative;min-height:490px;border:1px solid #8dd7fa30;border-radius:19px;overflow:hidden;background:radial-gradient(circle at 50% 20%,#234b77,#0a1935);touch-action:pan-y}
+#stage{position:absolute;inset:0}#stage canvas{display:block;width:100%;height:100%;touch-action:none}.chip{position:absolute;z-index:1;top:13px;left:13px;max-width:70%;background:#091e3cc7;color:#def7ff;border:1px solid #8fd8ff45;padding:8px 12px;border-radius:12px;font-size:12px;pointer-events:none}.vfooter{position:absolute;bottom:12px;left:12px;right:12px;display:flex;justify-content:space-between;gap:10px;pointer-events:none}.vfooter span{background:#0b1a32c7;color:#d3e9ff;font-size:11px;padding:6px 10px;border-radius:10px}.pad{background:#07172aaf;border:1px solid #99dcff28;padding:18px;border-radius:19px;min-height:490px}.pad h2{font-size:18px;margin:0 0 4px}.muted{color:var(--sub);font-size:12px;margin:4px 0 15px}.field{display:grid;gap:7px;margin:14px 0}.field label{font-size:13px;color:#d5eaff;font-weight:650}select,input[type=range]{width:100%}select{color:#e5f5ff;background:#173355;border:1px solid #789dc34a;border-radius:12px;padding:11px 12px;outline:none}.btn{border:none;border-radius:13px;background:linear-gradient(135deg,#67e7f8,#9cf2c0);color:#082545;font-weight:800;padding:12px 15px;box-shadow:0 7px 25px #32efdd29}.btn:active{transform:scale(.98)}.btn.sec{background:#253b60;color:#e3efff;box-shadow:none;border:1px solid #9fc5f53a}.pair{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:13px 0}.value{color:#8ff7e2;font-weight:800;float:right}.result{min-height:101px;padding:12px;background:#1834589c;border:1px solid #8cbdf43b;border-radius:14px;color:#ecf7ff;font-size:13px;white-space:pre-line}.result strong{color:#8cefe4}.smallnote{font-size:11px;color:#b4cbe5;margin-top:11px}.elements{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:16px 0}.atom{border-radius:14px;border:1px solid #ffffff40;background:#243e61;color:white;padding:11px 5px;font-size:19px;font-weight:850;transition:transform .15s}.atom small{display:block;font-size:10px;font-weight:500;color:#c7d9ec}.atom:active{transform:scale(.9)}.atom[data-e=H]{background:#647c99}.atom[data-e=O]{background:#aa415c}.atom[data-e=C]{background:#394b68}.atom[data-e=N]{background:#4568ba}.target{border-radius:14px;background:linear-gradient(100deg,#2d406e,#163c5a);border:1px solid #79ddff40;padding:12px;margin:12px 0;font-size:13px}.target b{font-size:20px;color:#a6ffe3}.subline{color:#acc4e4;font-size:12px}.objectives{padding:0 16px 16px;display:flex;gap:8px;flex-wrap:wrap}.objective{border-radius:11px;padding:7px 12px;background:#ffffff0f;color:#bedaf5;border:1px solid #ffffff16;font-size:12px}.objective.done{background:#1b615b7a;color:#aaffd7;border-color:#91ffcf70}
+.badge{padding:5px 9px;background:#f9db8760;border-radius:9px;color:#fff9d0;font-size:11px}.err{color:#ffd4cf}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.viewer{min-height:390px}.pad{min-height:0}.head h1{font-size:19px}.layout{padding:9px}.wrap{padding:9px}.vfooter{flex-wrap:wrap}.caps .tag{display:none}}
+@media(max-width:460px){.viewer{min-height:325px}.pair{grid-template-columns:1fr 1fr}.hero-top{padding:10px}.tab{padding:8px 10px;font-size:12px}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script>
+</head>
+<body>
+<div class="wrap">
+<header class="head">
+<div class="logo"><div class="ico">⚗</div><div><h1>CHEM LAB 3D <span style="color:#86f8d9">× AI CRUSH</span></h1><p data-t="subtitle">Интерактивті виртуалды химия әлемі • 7–11-сынып</p></div></div>
+<div class="caps"><span class="tag">360° • 3D • STEM</span><button class="outline" id="lang">РУС</button></div>
+</header>
+<div class="hero">
+<div class="hero-top"><div class="tabs"><button class="tab active" id="tabLab" data-t="tabLab">🧪 3D тәжірибе</button><button class="tab" id="tabMol" data-t="tabMol">⚛ Молекула құрастыру</button></div><div class="score" data-t="score">Жиналған ұпай: <b id="points">0</b> / 50</div></div>
+<div class="layout">
+<div class="viewer" id="viewer"><div id="stage"></div><div class="chip" id="hint">↔ 360° айналдыр • Үлкейту үшін екі саусақпен қозға</div><div class="vfooter"><span id="objectTip">🧪 Ыдысты және реактивтерді басып көр</span><span>CHEM AI CRUSH 3D</span></div></div>
+<div class="pad" id="labPanel">
+<h2 data-t="labTitle">Тәжірибе зертханасы</h2><p class="muted" data-t="labDesc">Реактивтерді таңдап, өзгерісті 3D ортада бақыла.</p>
+<div class="field"><label for="exp" data-t="choose">Зертханалық жұмыс</label><select id="exp">
+<option value="neutral">1. Бейтараптану — HCl + NaOH</option>
+<option value="gas">2. Газ бөлінуі — Сірке қышқылы + сода</option>
+<option value="precip">3. Тұнба түзілуі — CuSO₄ + NaOH</option>
+<option value="rust">4. Темірдің тот басуы — Fe + O₂ + H₂O</option>
+</select></div>
+<div class="pair"><div class="field"><label for="r1" data-t="reag1">1-реактив</label><select id="r1"></select></div><div class="field"><label for="r2" data-t="reag2">2-реактив</label><select id="r2"></select></div></div>
+<div class="field"><label for="volume"><span data-t="volume">Реактив мөлшері</span><span class="value"><span id="volNum">20</span> мл</span></label><input type="range" id="volume" min="10" max="50" step="10" value="20"></div>
+<div class="pair"><button class="btn" id="go" data-t="run">▶ Тәжірибені орындау</button><button class="btn sec" id="reset" data-t="reset">↺ Қайта бастау</button></div>
+<div class="result" id="result" role="status" aria-live="polite">✨ Зерттеу жұмысына дайын! Тәжірибені таңдап, реактивтерді қос.</div>
+<p class="smallnote" data-t="warning">⚠ Бұл — оқу симуляциясы. Түстер мен реакция жылдамдығы көрнекілік үшін модельденген. Нақты реактивтермен тәжірибені тек мұғалім бақылауымен орындаңыз.</p>
+</div>
+<div class="pad" id="molPanel" hidden>
+<h2 data-t="molTitle">Молекула конструкторы</h2><p class="muted" data-t="molDesc">Мақсатты формулаға сай атомдарды таңда. Дұрыс жинасаң, молекула кеңістікте пайда болады.</p>
+<div class="field"><label data-t="molChoose">Құрастырылатын молекула</label><select id="molecule"><option value="water">H₂O — Су</option><option value="carbon">CO₂ — Көмірқышқыл газы</option><option value="methane">CH₄ — Метан</option><option value="ammonia">NH₃ — Аммиак</option></select></div>
+<div class="target"><span data-t="target">Мақсат:</span> <b id="formula">H₂O</b><div id="selected" class="subline">Таңдалды: —</div></div>
+<div class="elements"><button class="atom" data-e="H">H<small>Сутек</small></button><button class="atom" data-e="O">O<small>Оттек</small></button><button class="atom" data-e="C">C<small>Көміртек</small></button><button class="atom" data-e="N">N<small>Азот</small></button></div>
+<div class="pair"><button class="btn" id="check" data-t="check">✓ Молекуланы тексеру</button><button class="btn sec" id="undo" data-t="undo">↶ Соңғы атомды өшіру</button></div>
+<button class="btn sec" style="width:100%;margin-bottom:12px" id="clear" data-t="clear">♻ Қайта құрастыру</button>
+<div class="result" id="molResult" role="status">Атомдарды таңда. Мысалы, H₂O үшін: O + H + H.</div>
+<p class="smallnote" data-t="bondNote">Модель дұрыс формула анықталғанда, атомдарды молекуланың шартты геометриясымен орналастырады.</p>
+</div>
+</div>
+<div class="objectives" id="objectiveList"><span class="objective" id="ob-neutral">◯ Бейтараптану</span><span class="objective" id="ob-gas">◯ Газ бөлінуі</span><span class="objective" id="ob-precip">◯ Тұнба</span><span class="objective" id="ob-rust">◯ Тот басу</span><span class="objective" id="ob-molecule">◯ Молекула</span></div>
+</div></div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+const $=id=>document.getElementById(id);
+const q=s=>document.querySelector(s);
+const ru={subtitle:'Интерактивный мир виртуальной химии • 7–11 классы',tabLab:'🧪 3D опыты',tabMol:'⚛ Собери молекулу',score:'Баллы: ',labTitle:'Лаборатория опытов',labDesc:'Выберите реагенты и наблюдайте изменения в 3D.',choose:'Лабораторная работа',reag1:'Реагент 1',reag2:'Реагент 2',volume:'Количество реактива',run:'▶ Провести опыт',reset:'↺ Сбросить',warning:'⚠ Учебная симуляция. Цвета и скорость реакций показаны условно. Настоящие опыты проводите только под контролем учителя.',molTitle:'Конструктор молекул',molDesc:'Выберите атомы по формуле. Правильно составленная молекула появится в объёме.',molChoose:'Целевая молекула',target:'Цель:',check:'✓ Проверить',undo:'↶ Удалить атом',clear:'♻ Собрать заново',bondNote:'После правильного выбора атомов они располагаются в приближённой молекулярной геометрии.'};
+const kz={};const initialLabels={};document.querySelectorAll('[data-t]').forEach(el=>initialLabels[el.dataset.t]=el.textContent);
+let language='kk',mode='lab',earned={};try{earned=JSON.parse(localStorage.getItem('chem_crush_3d_progress')||'{}')}catch(e){}
+function t(kk,rus){return language==='kk'?kk:rus}
+function score(){const n=Object.values(earned).filter(Boolean).length*10;$('points').textContent=n;Object.keys({neutral:1,gas:1,precip:1,rust:1,molecule:1}).forEach(k=>{$('ob-'+k).classList.toggle('done',!!earned[k]);$('ob-'+k).textContent=(earned[k]?'✓ ':'◯ ')+objLabels[k][language]})}
+const objLabels={neutral:{kk:'Бейтараптану',ru:'Нейтрализация'},gas:{kk:'Газ бөлінуі',ru:'Выделение газа'},precip:{kk:'Тұнба',ru:'Осадок'},rust:{kk:'Тот басу',ru:'Коррозия'},molecule:{kk:'Молекула',ru:'Молекула'}};
+function reward(k){if(!earned[k]){earned[k]=true;try{localStorage.setItem('chem_crush_3d_progress',JSON.stringify(earned))}catch(e){}}score()}
+const exps={
+ neutral:{name:['Бейтараптану','Нейтрализация'],r1:'HCl',r2:'NaOH',liquid:0x7ad0fa,after:0x64ddb7,eq:'HCl + NaOH → NaCl + H₂O',detail:['Қышқыл мен сілті әрекеттесіп, тұз және су түзеді. Бірдей концентрация мен тең көлемде ерітінді бейтараптанады (pH ≈ 7).','Кислота и щёлочь образуют соль и воду. При одинаковой концентрации и равных объёмах получается нейтральная среда (pH ≈ 7).']},
+ gas:{name:['Газ бөлінуі','Выделение газа'],r1:'CH₃COOH',r2:'NaHCO₃',liquid:0xbfe8fc,after:0xa7e8fa,eq:'CH₃COOH + NaHCO₃ → CH₃COONa + CO₂↑ + H₂O',detail:['Сірке қышқылы натрий гидрокарбонатымен әрекеттесіп, CO₂ газының көпіршіктерін түзеді.','Уксусная кислота реагирует с гидрокарбонатом натрия, выделяются пузырьки CO₂.']},
+ precip:{name:['Тұнба түзілуі','Образование осадка'],r1:'CuSO₄',r2:'NaOH',liquid:0x278dff,after:0x17acdf,eq:'CuSO₄ + 2NaOH → Cu(OH)₂↓ + Na₂SO₄',detail:['Мыс(II) гидроксидінің көгілдір тұнбасы түзіледі.','Образуется голубой осадок гидроксида меди(II).']},
+ rust:{name:['Коррозия','Коррозия'],r1:'Fe',r2:'O₂ + H₂O',liquid:0xa0dbef,after:0xb87843,eq:'4Fe + 3O₂ + 6H₂O → 4Fe(OH)₃ (шартты)',detail:['Темірдің ылғалды ауада тотығуы ұзақ уақыт жүреді. Көрініс жылдамдатылған; тот — құрамы өзгермелі гидратталған темір(III) оксидтері.','Ржавление железа во влажном воздухе идёт медленно. Здесь ускоренная модель; ржавчина — гидратированные оксиды железа(III) переменного состава.']}
+};
+const reagents=['HCl','NaOH','CH₃COOH','NaHCO₃','CuSO₄','Fe','O₂ + H₂O','H₂O'];
+const mols={
+ water:{formula:'H₂O',name:['Су','Вода'],atoms:['O','H','H'],pos:[[0,0,0],[-.95,.73,0],[.95,.73,0]],edges:[[0,1],[0,2]]},
+ carbon:{formula:'CO₂',name:['Көмірқышқыл газы','Углекислый газ'],atoms:['C','O','O'],pos:[[0,0,0],[-1.32,0,0],[1.32,0,0]],edges:[[0,1],[0,2]]},
+ methane:{formula:'CH₄',name:['Метан','Метан'],atoms:['C','H','H','H','H'],pos:[[0,0,0],[.95,.95,.95],[-.95,-.95,.95],[-.95,.95,-.95],[.95,-.95,-.95]],edges:[[0,1],[0,2],[0,3],[0,4]]},
+ ammonia:{formula:'NH₃',name:['Аммиак','Аммиак'],atoms:['N','H','H','H'],pos:[[0,.3,0],[0,-.8,1.12],[.95,-.8,-.56],[-.95,-.8,-.56]],edges:[[0,1],[0,2],[0,3]]}
+};
+let chosen=[],exp='neutral',molecule='water',volume=20,bubbleTime=0;
+function fillReagents(){for(const id of ['r1','r2'])$(id).replaceChildren(...reagents.map(r=>{const o=document.createElement('option');o.value=r;o.textContent=r;return o}));$('r1').value=exps[exp].r1;$('r2').value=exps[exp].r2}
+function setExp(){exp=$('exp').value;fillReagents();volume=20;$('volume').value=20;$('volNum').textContent='20';changeSolution(exps[exp].liquid);removeEffects();$('result').textContent=t('✨ Дайын! Реактивтерді тексеріп, тәжірибені орында.','✨ Готово! Выберите реагенты и проведите опыт.')}
+function setMode(next){mode=next;const b=next==='lab';$('labPanel').hidden=!b;$('molPanel').hidden=b;$('tabLab').classList.toggle('active',b);$('tabMol').classList.toggle('active',!b);labGroup.visible=b;molGroup.visible=!b;$('hint').textContent=b?t('↔ 360° айналдыр • Реактив бөтелкесін бас','↔ Поверните на 360° • Нажмите на бутылку') : t('↔ Молекуланы 360° айналдырып зертте','↔ Вращайте молекулу на 360°');controls.target.set(0,b?1.6:1.85,0);camera.position.set(b?7:5,b?4.6:3.3,b?9:6.8);controls.update();resize()}
+$('tabLab').onclick=()=>setMode('lab');$('tabMol').onclick=()=>setMode('mol');
+$('exp').onchange=setExp;
+$('volume').oninput=e=>{volume=Number(e.target.value);$('volNum').textContent=volume};
+$('reset').onclick=setExp;
+$('lang').onclick=()=>{language=language==='kk'?'ru':'kk';$('lang').textContent=language==='kk'?'РУС':'ҚАЗ';document.querySelectorAll('[data-t]').forEach(el=>{const key=el.dataset.t;if(key!=='score')el.textContent=language==='kk'?initialLabels[key]:ru[key]||initialLabels[key]});$('exp').options[0].textContent=t('1. Бейтараптану — HCl + NaOH','1. Нейтрализация — HCl + NaOH');$('exp').options[1].textContent=t('2. Газ бөлінуі — Сірке қышқылы + сода','2. Выделение газа — Уксус + сода');$('exp').options[2].textContent=t('3. Тұнба түзілуі — CuSO₄ + NaOH','3. Осадок — CuSO₄ + NaOH');$('exp').options[3].textContent=t('4. Темірдің тот басуы — Fe + O₂ + H₂O','4. Коррозия железа — Fe + O₂ + H₂O');$('molecule').options[0].textContent=t('H₂O — Су','H₂O — Вода');$('molecule').options[1].textContent=t('CO₂ — Көмірқышқыл газы','CO₂ — Углекислый газ');$('molecule').options[2].textContent=t('CH₄ — Метан','CH₄ — Метан');$('molecule').options[3].textContent=t('NH₃ — Аммиак','NH₃ — Аммиак');document.querySelectorAll('.atom small').forEach((el,i)=>el.textContent=language==='kk'?['Сутек','Оттек','Көміртек','Азот'][i]:['Водород','Кислород','Углерод','Азот'][i]);setExp();updateSelected();score()};
+function sorted(arr){return arr.slice().sort().join('|')}
+function updateSelected(){$('formula').textContent=mols[molecule].formula;$('selected').textContent=t('Таңдалды: ','Выбрано: ')+(chosen.join(', ')||'—');renderMolecule()}
+$('molecule').onchange=e=>{molecule=e.target.value;chosen=[];updateSelected();$('molResult').textContent=t('Атомдарды таңда.','Выберите атомы.')};
+document.querySelectorAll('.atom').forEach(btn=>btn.onclick=()=>{if(chosen.length>=8){$('molResult').textContent=t('8 атом шегі. Қайта бастау батырмасын бас.','Лимит 8 атомов. Нажмите сброс.');return}chosen.push(btn.dataset.e);updateSelected();$('molResult').textContent=t('Құрастырылып жатыр… Енді тексеруге болады.','Сборка… Можно проверить результат.')});
+$('undo').onclick=()=>{chosen.pop();updateSelected()};
+$('clear').onclick=()=>{chosen=[];updateSelected();$('molResult').textContent=t('Жаңа молекула құрастыр!','Соберите новую молекулу!')};
+$('check').onclick=()=>{const m=mols[molecule];if(sorted(chosen)===sorted(m.atoms)){$('molResult').textContent='✅ '+m.formula+' — '+m.name[language==='kk'?0:1]+'. '+t('Атомдар құрамы дұрыс! Кеңістіктік моделін айналдырып қара. +10 ұпай (алғашқы жетістік).','Состав атомов верный! Поверните 3D-модель. +10 баллов (первое достижение).');reward('molecule');renderMolecule()}else{$('molResult').textContent='❌ '+t('Формулаға сай емес. Мақсат: ','Неверный состав. Цель: ')+m.formula+'. '+t('Атом санын және түрін қайта тексер.','Проверьте числа и типы атомов.')}};
+const scene=new THREE.Scene();scene.background=new THREE.Color('#19365f');scene.fog=new THREE.Fog('#19365f',15,37);
+const camera=new THREE.PerspectiveCamera(48,1,.1,100);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.4;$('stage').appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement);controls.enableDamping=true;controls.dampingFactor=.08;controls.maxPolarAngle=Math.PI*.49;controls.minDistance=3;controls.maxDistance=21;controls.enablePan=false;
+scene.add(new THREE.HemisphereLight(0xe2faff,0x233657,2.0));const sun=new THREE.DirectionalLight(0xffffff,2.8);sun.position.set(-3,9,6);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);sun.shadow.camera.left=-12;sun.shadow.camera.right=12;sun.shadow.camera.top=12;sun.shadow.camera.bottom=-12;scene.add(sun);
+const fill=new THREE.PointLight(0x53dcff,55);fill.position.set(2,6,-2);scene.add(fill);
+const labGroup=new THREE.Group();const molGroup=new THREE.Group();scene.add(labGroup,molGroup);molGroup.visible=false;
+function mat(color,roughness=.55,metalness=0){return new THREE.MeshStandardMaterial({color,roughness,metalness})}
+function mesh(geo,material,parent=labGroup){const a=new THREE.Mesh(geo,material);a.castShadow=true;a.receiveShadow=true;parent.add(a);return a}
+function cube(w,h,d,color,x,y,z,parent=labGroup){const a=mesh(new THREE.BoxGeometry(w,h,d),mat(color),parent);a.position.set(x,y,z);return a}
+function cyl(rt,rb,h,color,x,y,z,parent=labGroup,segments=32){const a=mesh(new THREE.CylinderGeometry(rt,rb,h,segments),mat(color),parent);a.position.set(x,y,z);return a}
+function labelTexture(txt,bg='#f8fcff',ink='#112e4f'){const c=document.createElement('canvas');c.width=300;c.height=128;const x=c.getContext('2d');x.fillStyle=bg;x.fillRect(0,0,300,128);x.fillStyle=ink;x.font='bold 38px system-ui';x.textAlign='center';x.fillText(txt,150,75);const tx=new THREE.CanvasTexture(c);tx.colorSpace=THREE.SRGBColorSpace;return tx}
+const floor=cube(21,.2,17,0xaccde0,0,-.15,0);floor.material.roughness=.9;
+cube(20,8,.22,0x86adcf,0,3.8,-6.2);cube(.2,8,15,0x91b9d8,-9,3.8,0);
+for(let i=-8;i<=8;i+=2){const tile=cube(1.96,.01,13.8,i%4===0?0xe7f1f9:0xc8e0ea,i,.0,0);tile.receiveShadow=true}
+cube(9,.27,3.1,0xf5fcff,0,1.35,0);for(const x of [-3.75,3.75])for(const z of [-1.1,1.1])cube(.32,1.25,.32,0x5b8097,x,.6,z);
+cube(9,.13,.1,0x55bbca,0,1.27,1.55);
+cube(5.9,.2,.8,0xf0c6a9,0,3.35,-5.5);
+for(const x of [-3,3])cube(.18,2.1,.7,0x7b9bb9,x,2.3,-5.5);
+const board=cube(5,.11,2.2,0x243f66,0,4.4,-6.0);board.material.roughness=.8;
+function spriteText(txt,scale=1){const tx=labelTexture(txt,'#183b60','#b8fff2');const a=new THREE.Mesh(new THREE.PlaneGeometry(3.4*scale,1.35*scale),new THREE.MeshBasicMaterial({map:tx,transparent:false,side:THREE.DoubleSide}));return a}
+const titleMesh=spriteText('CHEM LAB 3D',.85);titleMesh.position.set(0,4.45,-5.91);labGroup.add(titleMesh);
+const glass=new THREE.MeshPhysicalMaterial({color:0xd6f6ff,metalness:0,roughness:.04,transmission:.55,transparent:true,opacity:.48,side:THREE.DoubleSide,depthWrite:false});
+function glassBeaker(x,z,size=1){const g=new THREE.Group();g.position.set(x,1.52,z);labGroup.add(g);const wall=mesh(new THREE.CylinderGeometry(.62*size,.57*size,1.2*size,48,1,true),glass,g);wall.position.y=.62*size;const foot=mesh(new THREE.CylinderGeometry(.57*size,.57*size,.05*size,48),glass,g);foot.position.y=.04;const lip=mesh(new THREE.TorusGeometry(.62*size,.035*size,10,48),mat(0xbff4ff,.1),g);lip.rotation.x=Math.PI/2;lip.position.y=1.2*size;const solution=mesh(new THREE.CylinderGeometry(.54*size,.52*size,.68*size,48),new THREE.MeshPhysicalMaterial({color:0x7ad0fa,transparent:true,opacity:.68,metalness:0,roughness:.1,depthWrite:false}),g);solution.position.y=.37*size;solution.userData.click='beaker';wall.userData.click='beaker';return {g,solution}};
+const beaker=glassBeaker(-.3,.15,1.15);
+const aux=glassBeaker(1.8,-.45,.55);aux.solution.material.color.setHex(0x56edbd);
+function reagentBottle(x,z,txt,color){const g=new THREE.Group();g.position.set(x,1.48,z);labGroup.add(g);const body=mesh(new THREE.CylinderGeometry(.25,.3,.8,24),new THREE.MeshPhysicalMaterial({color,metalness:0,roughness:.2,transparent:true,opacity:.8}),g);body.position.y=.41;body.userData.click=txt;const neck=cyl(.12,.12,.18,0xe8f6ff,0,1.02,0,g);neck.userData.click=txt;cyl(.18,.18,.12,0x284968,0,1.12,0,g).userData.click=txt;const tag=new THREE.Mesh(new THREE.PlaneGeometry(.47,.23),new THREE.MeshBasicMaterial({map:labelTexture(txt),side:THREE.DoubleSide}));tag.position.set(0,.48,.286);g.add(tag);tag.userData.click=txt;return g}
+reagentBottle(-3,-.65,'HCl',0x6acaf5);reagentBottle(-2.25,-.65,'NaOH',0x79e7ae);reagentBottle(-3,0.35,'CH₃COOH',0xffb4c5);reagentBottle(-2.25,.35,'NaHCO₃',0xe8e8f4);reagentBottle(2.5,.4,'CuSO₄',0x429dff);reagentBottle(3.2,.4,'Fe',0xc17e54);
+for(let x=-2.4;x<3;x+=.87)reagentBottle(x,-5.1,x<0?'H₂O':'LAB',x<0?0x72cdf8:0x9ed7dd);
+cube(.75,.07,.75,0x3e5c80,.8,1.56,.4);const flame=cyl(.15,.21,.36,0xffbd46,.8,1.8,.4);flame.material.emissive=new THREE.Color(0xe56612);flame.material.emissiveIntensity=.9;
+const stand=cyl(.08,.1,1.9,0xa6c5da,3.7,2.32,-.6);
+const gasParticles=new THREE.Group();labGroup.add(gasParticles);
+const precipParticles=new THREE.Group();labGroup.add(precipParticles);
+let animationEnd=0, effect='none';
+function removeEffects(){gasParticles.clear();precipParticles.clear();effect='none';animationEnd=0}
+function changeSolution(color){beaker.solution.material.color.setHex(color);beaker.solution.material.opacity=.68}
+function bubbles(){removeEffects();effect='bubbles';animationEnd=performance.now()+9500;for(let i=0;i<55;i++){const s=mesh(new THREE.SphereGeometry(.025+Math.random()*.042,10,8),new THREE.MeshPhysicalMaterial({color:0xf0ffff,transparent:true,opacity:.75,roughness:0}),gasParticles);s.position.set(-.3+(Math.random()-.5)*.85,2+(Math.random()*.7),.15+(Math.random()-.5)*.7);s.userData.speed=.007+Math.random()*.008;s.userData.start=Math.random()*7}}
+function precipitate(){removeEffects();effect='precip';for(let i=0;i<75;i++){const a=mesh(new THREE.IcosahedronGeometry(.04+Math.random()*.03,0),mat(0x55def5),precipParticles);a.position.set(-.3+(Math.random()-.5)*.95,1.6+Math.random()*.7,.15+(Math.random()-.5)*.92);a.userData.target=1.57+Math.random()*.1}}
+function rust(){removeEffects();effect='rust';for(let i=0;i<100;i++){const a=mesh(new THREE.DodecahedronGeometry(.025+Math.random()*.035,0),mat(0x994627),precipParticles);a.position.set(-.3+(Math.random()-.5)*.9,1.59+Math.random()*.2,.15+(Math.random()-.5)*.9)}}
+$('go').onclick=()=>{const e=exps[exp];if($('r1').value!==e.r1||$('r2').value!==e.r2){$('result').textContent='⚠ '+t('Бұл тәжірибе үшін реактивтер дұрыс таңдалмаған. Керек: ','Для этого опыта нужны другие реагенты: ')+e.r1+' + '+e.r2;return}changeSolution(e.after);if(exp==='gas')bubbles();else if(exp==='precip')precipitate();else if(exp==='rust')rust();else removeEffects();$('result').textContent='✅ '+t('Тәжірибе орындалды!','Опыт выполнен!')+'\n'+e.eq+'\n'+e.detail[language==='kk'?0:1]+'\n'+t('Қолданылған мөлшер: ','Выбранный объём: ')+volume+' мл.\n'+t('✓ Алғашқы рет: +10 ұпай.','✓ Впервые: +10 баллов.');reward(exp)};
+const atomColors={H:0xf2faff,O:0xff597a,C:0x394f6f,N:0x5791ff};const atomRadius={H:.34,O:.54,C:.52,N:.53};
+function renderMolecule(){molGroup.clear();const target=mols[molecule],ok=sorted(chosen)===sorted(target.atoms),arr=ok?target.atoms:chosen;const pos=ok?target.pos:chosen.map((x,i)=>[Math.cos(i*2.4)*1.4,Math.sin(i*2.4)*.8,(i%2-.5)*.6]);if(ok){for(const pair of target.edges){const a=new THREE.Vector3(...pos[pair[0]]),b=new THREE.Vector3(...pos[pair[1]]);const d=new THREE.Vector3().subVectors(b,a),bond=mesh(new THREE.CylinderGeometry(.09,.09,d.length(),14),mat(0xd8e3f2,.35),molGroup);bond.position.copy(a.add(b).multiplyScalar(.5)).add(new THREE.Vector3(0,1.9,0));bond.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),d.normalize())}}
+arr.forEach((e,i)=>{const p=pos[i],a=mesh(new THREE.SphereGeometry(atomRadius[e]||.4,32,24),new THREE.MeshPhysicalMaterial({color:atomColors[e]||0x93ffbc,roughness:.16,metalness:.15,clearcoat:1,clearcoatRoughness:.1}),molGroup);a.position.set(p[0],p[1]+1.9,p[2]);const gl=mesh(new THREE.SphereGeometry((atomRadius[e]||.4)*1.04,16,12),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.055,side:THREE.BackSide}),molGroup);gl.position.copy(a.position)})}
+const stars=new THREE.Group();molGroup.add(stars);for(let i=0;i<85;i++){const p=mesh(new THREE.SphereGeometry(.012,6,6),new THREE.MeshBasicMaterial({color:0x9ceafa}),stars);p.position.set((Math.random()-.5)*10,1.8+(Math.random()-.5)*6,(Math.random()-.5)*6)}}
+const raycaster=new THREE.Raycaster();const pointer=new THREE.Vector2();let down={x:0,y:0};renderer.domElement.addEventListener('pointerdown',e=>down={x:e.clientX,y:e.clientY});renderer.domElement.addEventListener('pointerup',e=>{if(mode!=='lab'||Math.hypot(e.clientX-down.x,e.clientY-down.y)>7)return;const rect=renderer.domElement.getBoundingClientRect();pointer.x=((e.clientX-rect.left)/rect.width)*2-1;pointer.y=-((e.clientY-rect.top)/rect.height)*2+1;raycaster.setFromCamera(pointer,camera);const hit=raycaster.intersectObjects(labGroup.children,true).find(x=>x.object.userData.click);if(hit){const c=hit.object.userData.click;$('objectTip').textContent=c==='beaker'?t('🧪 Мөлдір стақан: ерітінді осы жерде әрекеттеседі.','🧪 В стакане происходит реакция.'):t('🧴 Таңдалған реактив: ','🧴 Реагент: ')+c;if(c!=='beaker'){const sel=$('r1').value===c?'r2':'r1';if(reagents.includes(c))$(sel).value=c}}});
+function resize(){const r=$('stage').getBoundingClientRect();camera.aspect=Math.max(1,r.width)/Math.max(1,r.height);camera.updateProjectionMatrix();renderer.setSize(Math.max(1,r.width),Math.max(1,r.height),false)}new ResizeObserver(resize).observe($('stage'));
+const clock=new THREE.Clock();
+function loop(){requestAnimationFrame(loop);const dt=clock.getDelta(),now=performance.now();controls.update();if(mode==='lab'){flame.scale.y=.83+Math.sin(now/130)*.18;if(effect==='bubbles'){gasParticles.children.forEach((s,i)=>{s.position.y+=s.userData.speed*dt*60;if(s.position.y>3.7)s.position.y=1.9});if(now>animationEnd){effect='none'}}else if(effect==='precip'){precipParticles.children.forEach(s=>s.position.y=Math.max(s.userData.target,s.position.y-.005))}}else{molGroup.rotation.y+=.0025}renderer.render(scene,camera)}
+fillReagents();score();renderMolecule();setMode('lab');resize();loop();
+</script>
+</body>
+</html>
