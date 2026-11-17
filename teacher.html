@@ -37,7 +37,7 @@ input,select,textarea{background:#fff;border:1px solid #cbdbe8;border-radius:10p
 <label for="password" data-t="password">Құпиясөз (кемінде 8 таңба)</label><input id="password" type="password" autocomplete="current-password" minlength="8">
 <div class="actions"><button class="btn" id="login" data-t="login">Кіру</button><button class="btn second" id="register" data-t="register">Мұғалім ретінде тіркелу</button><button class="btn second" id="resetPassword" data-t="resetPassword">Құпиясөзді қалпына келтіру</button></div>
 <div class="msg" id="authMsg" role="status" aria-live="polite" data-t="authPrompt">Тексеру үшін өзіңіздің тест аккаунтыңызды пайдаланыңыз.</div>
-<div id="activateWrap" hidden><hr style="border:0;border-top:1px solid #dbe7ef;margin:15px 0"><b data-t="teacherActivateTitle">Мұғалім кеңістігін іске қосу</b><p class="muted" data-t="teacherActivateText">Электрондық пошта расталғаннан кейін мұғалім кабинетін белсендіруге болады.</p><button class="btn" id="activate" data-t="activate">Мұғалім кабинетін белсендіру</button></div>
+<div id="activateWrap" hidden><hr style="border:0;border-top:1px solid #dbe7ef;margin:15px 0"><b data-t="teacherActivateTitle">Мұғалім кеңістігін іске қосу</b><p class="muted" data-t="teacherActivateText">Электрондық пошта расталғаннан кейін мұғалім кабинетін белсендіруге болады.</p><div class="actions"><button class="btn" id="activate" data-t="activate">Мұғалім кабинетін белсендіру</button><button class="btn second" id="studentOpen" data-t="openStudent">Оқушы кабинетін ашу</button></div></div>
 </section>
 <div id="appView" hidden>
 <nav class="nav" id="mainNav" aria-label="Teacher Edition">
@@ -82,6 +82,6 @@ input,select,textarea{background:#fff;border:1px solid #cbdbe8;border-radius:10p
 </div>
 <p class="footer">CHEM AI CRUSH Teacher Edition 1.0 • Пилот · GitHub Pages + Supabase · Авторлық және жеке деректер талаптарын сақтаңыз.</p>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.8/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
 <script defer src="./teacher.js"></script>
 </body></html>
