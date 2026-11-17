@@ -24,7 +24,7 @@ const offline=fs.readFileSync('teacher-offline.html','utf8');
 assert.ok(offline.includes('<html lang="kk">'),'Offline-safe Teacher Studio page missing');
 assert.ok(offline.includes('id="cards"') && offline.includes('id="lessonBody"') && offline.includes('id="download"'),'Offline library or Word editor missing');
 assert.ok(offline.includes('chem_ai_crush_3d_lab.html'),'Offline fallback does not link existing 3D laboratory');
-const match=offline.match(/<script>([\\s\\S]*?)<\\/script>/);
+const match=offline.match(/<script>([\s\S]*?)<\/script>/);
 assert.ok(match,'Offline JavaScript missing');
 assert.doesNotThrow(()=>new vm.Script(match[1],{filename:'teacher-offline.html'}),'Offline studio script syntax invalid');
 assert.ok(home.includes('href="./teacher-offline.html"'),'Main page missing fallback link');
