@@ -19,4 +19,16 @@ assert.ok(lab.includes('OrbitControls'),'3D lab missing 360 controls');
 assert.ok(js.includes('body:makeBody')||js.includes('makeBody(s,lang,kind)'),'Sample packs missing');
 assert.ok(!/sb_secret_|service_role|SUPABASE_SERVICE_ROLE/.test(js),'Client leaks secret credentials');
 assert.ok(html.includes('⚠ Пилоттық нұсқа'),'Privacy pilot warning missing');
+
+const offline=fs.readFileSync('teacher-offline.html','utf8');
+assert.ok(offline.includes('<html lang="kk">'),'Offline-safe Teacher Studio page missing');
+assert.ok(offline.includes('id="cards"') && offline.includes('id="lessonBody"') && offline.includes('id="download"'),'Offline library or Word editor missing');
+assert.ok(offline.includes('chem_ai_crush_3d_lab.html'),'Offline fallback does not link existing 3D laboratory');
+const match=offline.match(/<script>([\\s\\S]*?)<\\/script>/);
+assert.ok(match,'Offline JavaScript missing');
+assert.doesNotThrow(()=>new vm.Script(match[1],{filename:'teacher-offline.html'}),'Offline studio script syntax invalid');
+assert.ok(home.includes('href="./teacher-offline.html"'),'Main page missing fallback link');
+assert.ok(html.includes('href="./teacher-offline.html"'),'Teacher Edition missing fallback link');
+console.log('Offline Teacher Studio checks passed.');
+
 console.log('Teacher Edition static smoke checks passed ('+referenced.length+' DOM references).');
