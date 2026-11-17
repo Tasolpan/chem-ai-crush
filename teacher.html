@@ -27,10 +27,16 @@ input,select,textarea{background:#fff;border:1px solid #cbdbe8;border-radius:10p
 </style></head>
 <body>
 <header class="top"><div class="brand"><div class="brand-icon">⚗️</div><div><b>CHEM AI CRUSH <span style="color:#86f7e7">TEACHER</span></b><small>Edition 1.0 · ҚР химия мұғалімдеріне</small></div></div>
-<div class="topact"><a class="linkbtn" href="./index.html" data-t="back">← Басты сайт</a><button id="language" class="ghost" type="button">РУС</button><span id="userTag" style="font-size:12px"></span><button id="signOut" class="ghost" hidden data-t="signOut">Шығу</button></div></header>
+<div class="topact"><a class="linkbtn" href="./index.html" data-t="back">← Басты сайт</a><a class="linkbtn" href="./teacher-offline.html" style="background:#155e76;color:#fff">📚 Жеңіл нұсқа</a><button id="language" class="ghost" type="button">РУС</button><span id="userTag" style="font-size:12px"></span><button id="signOut" class="ghost" hidden data-t="signOut">Шығу</button></div></header>
 <div class="wrap">
 <div class="notice" data-t="pilot">⚠ Пилоттық нұсқа: дерекқор әзірге Қазақстаннан тыс аймақта. Қазақстанда сақтау және кәмелетке толмағандардың деректерін қорғау талаптары расталмайынша шынайы оқушы деректерін енгізбеңіз. Сынақ аккаунттары мен ойдан шығарылған деректерді ғана қолданыңыз.</div>
 <div class="hero"><div><h1>Teacher Edition <span style="color:#a9ffda">1.0</span></h1><p data-t="tagline">Сабақ дайындаңыз • Өзгертіңіз • Сыныпқа беріңіз • Нәтижесін көріңіз</p></div><div class="badge">🇰🇿<br>7–8 сынып<br>ҚАЗ / РУС</div></div>
+<div class="card" id="fallbackNotice" style="margin:0 0 14px;padding:14px;border-color:#9ccde3;background:linear-gradient(120deg,#e9f9fd,#ffffff)">
+  <b style="display:block;font-size:17px;margin-bottom:4px">📘 Сайт ашылмаса — жеңіл мұғалім кабинеті</b>
+  <p style="margin:0 0 10px;color:#486780;font-size:13px">Бұл нұсқа тіркелусіз ашылады: 7–8-сынып, қазақша/орысша үлгілер, ҚМЖ өңдеу, Word жүктеу және тест.</p>
+  <a href="./teacher-offline.html" class="btn" style="text-decoration:none">🚀 Жеңіл нұсқаны ашу →</a>
+  <span style="color:#657b94;font-size:12px;margin-left:7px">Нәтижелер серверге сақталмайды</span>
+ </div>
 <section class="card auth" id="authView">
 <h2 data-t="authTitle">Мұғалім кабинеті</h2><p class="intro" data-t="authDesc">Поштаңызды растағаннан кейін жеке кабинет ашылады. Мұғалім рөлі өздігінен көрсетіледі, бұл мектептің ресми растауы емес.</p>
 <div class="formrow"><div><label for="fullName" data-t="name">Аты-жөні</label><input id="fullName" autocomplete="name" placeholder="Мұғалім аты-жөні"></div><div><label for="email" data-t="email">Электрондық пошта</label><input id="email" type="email" autocomplete="email"></div></div>
@@ -82,6 +88,6 @@ input,select,textarea{background:#fff;border:1px solid #cbdbe8;border-radius:10p
 </div>
 <p class="footer">CHEM AI CRUSH Teacher Edition 1.0 • Пилот · GitHub Pages + Supabase · Авторлық және жеке деректер талаптарын сақтаңыз.</p>
 </div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1" onerror="document.getElementById('authMsg').textContent='⚠ Кіру қызметі жүктелмеді. Төмендегі Жеңіл нұсқа сілтемесін ашыңыз.'"></script>
 <script defer src="./teacher.js"></script>
 </body></html>
