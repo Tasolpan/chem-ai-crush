@@ -1171,7 +1171,7 @@ async function loadStudentResults(userId) {
       return;
     }
     if (!Array.isArray(data) || data.length < 40) {
-      message.textContent = `Тестті бастау мүмкін емес: базадан ${data?.length || 0}/40 тексерілген және бұрын қолданылмаған сұрақ табылды. Сұрақтар базасында 40 сұрақтың verified=true болуы және source='unt_2026_v1' шартына сай келуі қажет.`;
+      message.textContent = `Тестті бастау мүмкін емес: базадан ${data?.length || 0}/40 тексерілген сұрақ табылды.`;
       startBtn.disabled = false;
       return;
     }
@@ -1224,9 +1224,7 @@ async function loadStudentResults(userId) {
       } else {
         saveMessage = 'Нәтиже Supabase жүйесіне сақталды.';
       }
-      const ids = untQuestions.map(q=>String(q.id));
-      const { error: historyError } = await supabaseClient.rpc('record_chemistry_question_usage', { p_question_ids: ids });
-      if (historyError) saveMessage += ' Сұрақтар тарихын сақтау ескертуі: ' + historyError.message;
+      // Repeated test attempts are permitted; each result is saved separately.
     }
     const review = answers.map((a,i) => `<div class="card" style="margin:10px 0"><b>${i+1}. ${esc(a.question)}</b><p style="color:${a.is_correct?'#126749':'#b4232c'}">${a.is_correct?'Дұрыс жауап':'Қате немесе жауап берілмеген'}</p>${a.is_correct?'':`<p class="muted">Дұрыс жауап коды: ${esc(JSON.stringify(a.correct_answer))}</p>`}${esc(untQuestions[i].explanation || '')}</div>`).join('');
     area.innerHTML = `<div class="panel" style="text-align:center"><div style="font-size:42px">${percent>=80?'🎉':'🧪'}</div><h2>ҰБТ сынақ тестінің нәтижесі</h2><div style="font-size:42px;font-weight:900;color:#087e9b">${correct} / 40</div><p style="font-size:20px;font-weight:800">${percent}%</p><p>Дұрыс жауап: ${correct} · Қате немесе бос жауап: ${40-correct}</p><p class="muted">${timeExpired?'Уақыт аяқталды.':'Тест аяқталды.'}</p><p class="muted">${esc(saveMessage)}</p><button class="btn primary" id="againUntBtn">Қайта тест тапсыру</button></div><div class="section-head"><div><h2>Жауаптарды талдау</h2><p>Қате кеткен сұрақтарды қайталаңыз.</p></div></div>${review}`;
