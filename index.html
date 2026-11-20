@@ -1164,7 +1164,8 @@ async function loadStudentResults(userId) {
     startBtn.disabled = true;
     message.textContent = 'Тексерілген ҰБТ сұрақтары жүктелуде...';
     area.innerHTML = '';
-    const { data, error } = await supabaseClient.rpc('get_unt_test_questions');
+    const selectedVariant = Number(document.getElementById('untVariantSelect')?.value || 1);
+    const { data, error } = await supabaseClient.rpc('get_unt_test_questions', { p_variant: selectedVariant });
     if (error) {
       message.textContent = 'Сұрақтарды жүктеу қатесі: ' + error.message + '. Supabase-та get_unt_test_questions функциясы мен рұқсаттарын тексеріңіз.';
       startBtn.disabled = false;
@@ -1237,6 +1238,14 @@ async function loadStudentResults(userId) {
     };
     startBtn.disabled = false;
   }
+  const variantPicker = document.createElement('div');
+  variantPicker.className = 'card';
+  variantPicker.style.margin = '14px 0';
+  variantPicker.innerHTML = '<label for="untVariantSelect"><b>ҰБТ тест нұсқасы (әрқайсысы 40 сұрақ)</b></label> ' +
+    '<select id="untVariantSelect" style="padding:10px;border:1px solid #cbd5e1;border-radius:9px;margin-left:8px">' +
+    Array.from({length:11},(_,i)=>'<option value="'+(i+1)+'">'+(i+1)+'-нұсқа</option>').join('')+'</select>' +
+    '<p class="muted">Тест аяқталғаннан кейін осы нұсқаны қайта тапсыруға болады.</p>';
+  startBtn.parentNode.insertBefore(variantPicker, startBtn);
   startBtn.addEventListener('click', startTest);
 })();</script>
   
