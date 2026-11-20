@@ -341,7 +341,65 @@ document.querySelectorAll('[data-page]').forEach(b => {
 document.querySelectorAll('[data-goto]').forEach(b => {
   b.addEventListener('click', () => showPage(b.dataset.goto));
 });
-const quiz=[{q:'Судың химиялық формуласы қандай?',a:['CO₂','H₂O','O₂','NaCl'],c:1,e:'Су молекуласында екі сутек атомы және бір оттек атомы бар.'},{q:'Атом ядросында қандай бөлшектер болады?',a:['Тек электрондар','Протондар мен нейтрондар','Тек нейтрондар','Протондар мен электрондар'],c:1,e:'Ядро протондар мен нейтрондардан тұрады. Электрондар ядроны қоршаған аймақта болады.'},{q:'Оттектің химиялық таңбасы қандай?',a:['Ox','O','Ot','Og'],c:1,e:'Оттектің химиялық таңбасы — O. O₂ — оттектің жай затының формуласы.'},{q:'Зат мөлшерінің SI жүйесіндегі бірлігі қандай?',a:['Грамм','Литр','Моль','Паскаль'],c:2,e:'Зат мөлшерінің негізгі бірлігі — моль.'},{q:'Бейтарап атомда протон саны электрон санына…',a:['Әрқашан тең','Әрқашан аз','Әрқашан көп','Байланысты емес'],c:0,e:'Бейтарап атомда оң зарядты протондардың саны теріс зарядты электрондардың санына тең.'}];
+let quiz = [];
+let previousPracticeIds = [];
+async function loadPracticeQuestions() {
+  const panel = document.getElementById('quizPanel');
+  panel.innerHTML = '<div class="panel">Жаңа 5 сұрақ жүктелуде...</div>';
+  const { data, error } = await supabaseClient.rpc('get_practice_questions', {
+    p_exclude_ids: previousPracticeIds
+  });
+  if (error || !Array.isArray(data) || data.length !== 5) {
+    panel.innerHTML = '<div class="panel"><p>Сұрақтар жүктелмеді. Интернет байланысын тексеріп, қайта көріңіз.</p><p class="muted" id="practiceError"></p><button class="btn primary" id="practiceRetry">Қайта жүктеу</button></div>';
+    document.getElementById('practiceError').textContent = error?.message || '5 сұрақ алынбады';
+    document.getElementById('practiceRetry').onclick = loadPracticeQuestions;
+    return;
+  }
+  previousPracticeIds = data.map(q => q.id);
+  quiz = data.map(q => ({
+    q: q.question_text.replace(/^\\d+\\.\\s*/, ''),
+    a: q.answer_options,
+    c: Number(q.correct_answers[0]),
+    e: q.explanation || 'Жауапты теориямен салыстырып көріңіз.'
+  }));
+  qi = 0; score = 0; answered = false; userAnswers = [];
+  buildPracticePanel();
+}
+function buildPracticePanel() {
+  document.getElementById('quizPanel').innerHTML = `
+    <div style="display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px">
+      <span id="quizCount"></span><span id="quizScore"></span>
+    </div>
+    <div class="progress" style="margin-top:12px"><span id="quizProgress" style="width:20%"></span></div>
+    <h2 class="quiz-question" id="quizQuestion"></h2>
+    <div class="answers" id="answers"></div><div id="feedback"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:18px;gap:10px">
+      <button class="btn" id="restartQuiz" style="background:#edf3f8;color:var(--ink)">Басқа 5 сұрақ</button>
+      <button class="btn primary" id="nextQuestion" disabled>Келесі сұрақ →</button>
+    </div>`;
+  document.getElementById('restartQuiz').onclick = restartQuiz;
+  document.getElementById('nextQuestion').onclick = advancePractice;
+  renderQuiz();
+}
+async function advancePractice() {
+  if (qi < quiz.length - 1) { qi++; renderQuiz(); return; }
+  document.getElementById('quizPanel').innerHTML = `
+    <div style="text-align:center;padding:28px 10px">
+      <h2>Жаттығу аяқталды!</h2><div style="font-size:38px;font-weight:900;color:#087e9b">${score} / ${quiz.length}</div>
+      <p>Дұрыс жауап: ${score} · Қате жауап: ${quiz.length-score}</p>
+      <button class="btn primary" id="again">Жаңа 5 сұрақ</button>
+      <p id="saveStatus" class="muted">Нәтиже сақталып жатыр...</p>
+    </div>`;
+  document.getElementById('again').onclick = restartQuiz;
+  try {
+    const { data: { user } } = await supabaseClient.auth.getUser();
+    if (!user) { document.getElementById('saveStatus').textContent = 'Нәтижені сақтау үшін аккаунтқа кіріңіз.'; return; }
+    const { error } = await supabaseClient.from('test_attempts').insert({
+      student_id:user.id,correct_answers:score,total_questions:quiz.length,answers:userAnswers
+    });
+    document.getElementById('saveStatus').textContent = error ? 'Сақтау қатесі: '+error.message : 'Нәтиже сақталды.';
+  } catch (error) { document.getElementById('saveStatus').textContent = 'Нәтиже сақталмады.'; }
+}
 
 let qi = 0, score = 0, answered = false;
 let userAnswers = [];
@@ -444,105 +502,8 @@ function answerQuiz(i) {
 }
 
 
-document.getElementById('nextQuestion').onclick = async function () {
-  if (qi < quiz.length - 1) {
-    qi++;
-    renderQuiz();
-    return;
-  }
-
-  document.getElementById('quizPanel').innerHTML = `
-    <div style="text-align:center;padding:28px 10px">
-      <div style="font-size:44px">${score >= 4 ? '🎉' : '🧪'}</div>
-      <h2>Жаттығу аяқталды!</h2>
-      <div style="font-size:38px;font-weight:900;color:#087e9b">
-        ${score} / ${quiz.length}
-      </div>
-      <p class="muted">
-        ${score >= 4
-          ? 'Жарайсың! Біліміңді әрі қарай бекіт.'
-          : 'Қателерді қарап, қайта жаттығып көр.'}
-      </p>
-      <p>Дұрыс жауап саны: ${score}</p>
-      <p>Қате жауап саны: ${quiz.length - score}</p>
-      <button class="btn primary" id="again">Қайта тапсыру</button>
-      <p id="saveStatus" class="muted">Нәтиже сақталып жатыр...</p>
-    </div>
-  `;
-
-  document.getElementById('again').onclick = restartQuiz;
-
-  try {
-    await saveQuizResult();
-    const status = document.getElementById('saveStatus');
-    if (status) status.textContent = 'Нәтижені сақтау әрекеті аяқталды.';
-  } catch (error) {
-    const status = document.getElementById('saveStatus');
-    if (status) status.textContent = 'Нәтиже сақталмады.';
-    console.error(error);
-  }
-};
-
-
-function restartQuiz() {
-  qi = 0;
-  score = 0;
-  answered = false;
-  userAnswers = [];
-
-  document.getElementById('quizPanel').innerHTML = `
-    <div style="display:flex;justify-content:space-between;gap:12px;color:var(--muted);font-size:12px">
-      <span id="quizCount"></span>
-      <span id="quizScore"></span>
-    </div>
-
-    <div class="progress" style="margin-top:12px">
-      <span id="quizProgress" style="width:20%"></span>
-    </div>
-
-    <h2 class="quiz-question" id="quizQuestion"></h2>
-    <div class="answers" id="answers"></div>
-    <div id="feedback"></div>
-
-    <div style="display:flex;justify-content:space-between;margin-top:18px;gap:10px">
-      <button class="btn" id="restartQuiz"
-        style="background:#edf3f8;color:var(--ink)">
-        Қайта бастау
-      </button>
-
-      <button class="btn primary" id="nextQuestion" disabled>
-        Келесі сұрақ →
-      </button>
-    </div>
-  `;
-
-  document.getElementById('restartQuiz').onclick = restartQuiz;
-
-  document.getElementById('nextQuestion').onclick = async function () {
-    if (qi < quiz.length - 1) {
-      qi++;
-      renderQuiz();
-    } else {
-      await saveQuizResult();
-
-      document.getElementById('quizPanel').innerHTML = `
-        <div style="text-align:center;padding:28px 10px">
-          <h2>Жаттығу аяқталды!</h2>
-          <div class="calc-result">${score} / ${quiz.length}</div>
-          <button class="btn primary" onclick="restartQuiz()">
-            Қайта тапсыру
-          </button>
-        </div>
-      `;
-    }
-  };
-
-  renderQuiz();
-}
-
-document.getElementById('restartQuiz').onclick = restartQuiz;
-
-renderQuiz();
+function restartQuiz() { loadPracticeQuestions(); }
+loadPracticeQuestions();
 let els = [];
 
 async function renderPeriodic() {
