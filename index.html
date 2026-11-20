@@ -138,7 +138,7 @@ const client=window.supabase?.createClient('https://skmdphfeyrqdmjlzyspe.supabas
 let currentUser=null,topics=[],exam=[],timer=null,started=0,finished=false;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const worlds=[['⚛️','Атом әлемі','Элементтер, бөлшектер, байланыстар'],['🧪','Реакциялар','Теңдеулер, заңдылықтар, өзгерістер'],['🌿','Өмір химиясы','Тұрмыс пен табиғаттағы химия'],['🧠','Химиялық логика','Моль, есеп, дәлелдеу'],['🔬','Жаңалық ашу','Зерттеу және ғылыми ойлау']];
-$('worlds').innerHTML=worlds.map(w=>'<button class="world-tile" data-page="academy"><span>'+w[0]+'</span><strong>'+w[1]+'</strong><small>'+w[2]+'</small></button>').join('');
+// The old worlds panel was removed from the new homepage. Do not access a missing DOM node.
 function show(page){document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id===page));document.querySelectorAll('.navlinks button').forEach(x=>x.classList.toggle('active',x.dataset.page===page));if(page==='teacher')teacher();window.scrollTo(0,0)}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-page]');if(b)show(b.dataset.page)});
 $('accountBtn').onclick=()=>show('account');
